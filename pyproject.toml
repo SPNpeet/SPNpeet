@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hyperframe-video"
+version = "0.1.0"
+description = "Edit video clips with ffmpeg and publish them as Farcaster Hyperframes."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "SPNpeet" }]
+keywords = ["farcaster", "hyperframe", "frames", "video", "ffmpeg"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Multimedia :: Video",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[project.scripts]
+hyperframe-video = "hyperframe_video.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["hyperframe_video*"]
+exclude = ["tests*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
