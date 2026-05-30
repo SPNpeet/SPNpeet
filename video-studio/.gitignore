@@ -1,0 +1,6 @@
+node_modules/
+package-lock.json
+renders/
+assets/clip.mp4
+.hyperframes-cache/
+.DS_Store

@@ -1,0 +1,15 @@
+{
+  "name": "video-studio",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "npx --yes hyperframes@0.6.61 preview",
+    "check": "npx --yes hyperframes@0.6.61 lint && npx --yes hyperframes@0.6.61 validate && npx --yes hyperframes@0.6.61 inspect",
+    "render": "npx --yes hyperframes@0.6.61 render",
+    "publish": "npx --yes hyperframes@0.6.61 publish",
+    "demo:clip": "ffmpeg -y -f lavfi -i testsrc2=size=1920x1080:rate=30 -f lavfi -i sine=frequency=440 -t 25 -c:v libx264 -pix_fmt yuv420p -g 30 -keyint_min 30 -movflags +faststart -c:a aac assets/clip.mp4"
+  },
+  "dependencies": {
+    "gsap": "^3.14.2"
+  }
+}
