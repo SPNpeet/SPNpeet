@@ -3,152 +3,120 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>video-studio · viral clip cooker</title>
+    <title>video-studio</title>
     <link rel="stylesheet" href="/style.css" />
   </head>
   <body>
     <header>
       <div class="brand">
         <span class="logo"></span>
-        <h1>video-studio</h1>
+        <div>
+          <h1>video-studio</h1>
+          <p class="tagline">อัปโหลดคลิปยาว → ระบบตัดอัตโนมัติ + เอฟเฟกต์ + render MP4 พร้อมโพสต์</p>
+        </div>
       </div>
-      <p class="tagline">อัปโหลดคลิป → เลือก format → ใส่ hook + caption → render MP4 พร้อมโพสต์</p>
     </header>
 
     <main>
-      <form id="render-form" class="card">
+      <form id="render-form" class="card" autocomplete="off">
 
+        <!-- STEP 1 — Format -->
         <section>
-          <h2>0. เลือก format</h2>
-          <div class="format-grid">
-            <label class="format-card">
-              <input type="radio" name="format" value="landscape" checked />
-              <span class="fmt-icon">🖥</span>
-              <span class="fmt-label">16:9 Landscape</span>
-              <span class="fmt-sub">YouTube · Shorts preview</span>
-            </label>
-            <label class="format-card active" id="fmt-vertical">
-              <input type="radio" name="format" value="vertical" />
+          <div class="step-label"><span class="step-num">1</span> เลือก platform</div>
+          <div class="fmt-grid">
+            <label class="fmt-card">
+              <input type="radio" name="format" value="vertical" checked />
               <span class="fmt-icon">📱</span>
-              <span class="fmt-label">9:16 Vertical</span>
-              <span class="fmt-sub">TikTok · IG Reels</span>
+              <span class="fmt-name">TikTok · IG Reels</span>
+              <span class="fmt-dim">1080 × 1920 · 9:16</span>
+            </label>
+            <label class="fmt-card">
+              <input type="radio" name="format" value="landscape" />
+              <span class="fmt-icon">🖥</span>
+              <span class="fmt-name">YouTube · Facebook</span>
+              <span class="fmt-dim">1920 × 1080 · 16:9</span>
             </label>
           </div>
         </section>
 
+        <!-- STEP 2 — File -->
         <section>
-          <h2>1. คลิปของคุณ</h2>
-          <label class="file">
-            <input type="file" name="clip" accept="video/*" required />
-            <span class="file-text">เลือกไฟล์วิดีโอ (mp4/mov/webm, สูงสุด 200MB)</span>
+          <div class="step-label"><span class="step-num">2</span> คลิปต้นฉบับ</div>
+          <label class="dropzone" id="dropzone">
+            <input type="file" name="clip" accept="video/*" required id="file-input" />
+            <span class="dz-icon">🎬</span>
+            <span class="dz-text" id="dz-text">คลิกเลือก หรือ ลากไฟล์มาวาง<br/><small>mp4 / mov / webm · สูงสุด 500 MB</small></span>
           </label>
-          <div class="row">
+        </section>
+
+        <!-- STEP 3 — Duration -->
+        <section>
+          <div class="step-label"><span class="step-num">3</span> ความยาวที่ต้องการ</div>
+          <div class="slider-row">
+            <input type="range" name="targetDuration" id="dur-slider" min="30" max="600" step="30" value="180" />
+            <span class="slider-val" id="dur-val">3:00</span>
+          </div>
+          <p class="hint">ระบบจะเลือกช่วงที่ดีที่สุดจากคลิปต้นฉบับให้ครบตามเวลานี้</p>
+        </section>
+
+        <!-- STEP 4 — Text -->
+        <section>
+          <div class="step-label"><span class="step-num">4</span> ข้อความ (ไม่บังคับ)</div>
+          <div class="text-grid">
             <label>
-              เริ่มที่วินาที
-              <input type="number" name="clipStart" value="0" min="0" step="0.1" />
+              Hook (วินาทีแรก)
+              <input type="text" name="hookText" placeholder="Wait for it… / POV: / NEW DROP" maxlength="60" />
+              <span class="hint">โชว์ 0–4 วินาทีแรก ดึงคนหยุดดู</span>
             </label>
-            <label id="dur-label">
-              ความยาวบนไทม์ไลน์
-              <input type="number" name="clipDuration" id="clip-duration" value="21" min="1" step="0.1" />
+            <label>
+              Caption กลางคลิป
+              <input type="text" name="caption" placeholder="Behind the scenes / ทำอย่างไร…" maxlength="60" />
+            </label>
+            <label>
+              CTA ท้ายคลิป
+              <input type="text" name="ctaText" placeholder="FOLLOW @SPNpeet / ติดตามเพิ่มเติม" maxlength="60" />
+              <span class="hint">โชว์ 5 วินาทีสุดท้าย</span>
             </label>
           </div>
         </section>
 
-        <!-- Landscape fields -->
-        <div id="fields-landscape">
-          <section>
-            <h2>2. Hook + caption</h2>
-            <div class="row">
-              <label>
-                Intro title
-                <input type="text" name="introTitle" value="NEW DROP" maxlength="40" />
-              </label>
-              <label>
-                Intro subtitle
-                <input type="text" name="introSubtitle" value="Coming this week" maxlength="60" />
-              </label>
-            </div>
-            <label>
-              Lower-third caption
-              <input type="text" name="caption" value="Behind the scenes" maxlength="80" />
-            </label>
-          </section>
-          <section>
-            <h2>3. Outro</h2>
-            <div class="row">
-              <label>Outro headline<input type="text" name="outroTitle" value="FOLLOW @SPNpeet" maxlength="40" /></label>
-              <label>Outro subline<input type="text" name="outroSubtitle" value="More on the way" maxlength="60" /></label>
-            </div>
-          </section>
-        </div>
-
-        <!-- Vertical / TikTok+IG fields -->
-        <div id="fields-vertical" style="display:none">
-          <section>
-            <h2>2. Hook (วินาทีแรก — สำคัญที่สุด)</h2>
-            <div class="row">
-              <label>
-                Hook text ใหญ่
-                <input type="text" name="hookText" value="Wait for it..." maxlength="40" />
-              </label>
-              <label>
-                Hook subtext
-                <input type="text" name="hookSub" value="this is insane 🔥" maxlength="60" />
-              </label>
-            </div>
-          </section>
-          <section>
-            <h2>3. Mid-clip caption</h2>
-            <label>
-              ข้อความระหว่างคลิป
-              <input type="text" name="midCaption" value="Behind the scenes" maxlength="80" />
-            </label>
-          </section>
-          <section>
-            <h2>4. CTA outro</h2>
-            <div class="row">
-              <label>CTA headline<input type="text" name="ctaText" value="FOLLOW @SPNpeet" maxlength="40" /></label>
-              <label>CTA subline<input type="text" name="ctaSub" value="new drops every week" maxlength="60" /></label>
-            </div>
-          </section>
-        </div>
-
-        <section>
-          <h2 id="accent-label">สีไฮไลต์</h2>
-          <label class="color">
-            <input type="color" name="accent" id="accent-input" value="#22d3ee" />
-            <span id="accent-hint">cyan · landscape default</span>
-          </label>
-        </section>
-
-        <button type="submit" id="submit-btn">▸ Render</button>
+        <button type="submit" id="submit-btn">
+          <span id="btn-label">▸  Render คลิป</span>
+        </button>
       </form>
 
-      <aside class="card status hidden" id="status-card">
-        <h2 id="status-title">กำลังทำงาน</h2>
-        <div class="progress-row">
-          <div class="bar"><div class="bar-fill" id="bar-fill"></div></div>
-          <span id="bar-text">0%</span>
-        </div>
-        <p class="stage" id="stage-text">queued</p>
-        <p class="elapsed" id="elapsed-text">0s</p>
-        <pre class="log" id="log-output"></pre>
-
-        <div class="result hidden" id="result">
-          <h3>เสร็จแล้ว ✓</h3>
-          <video controls playsinline id="result-video"></video>
-          <a class="download" id="download-link" download>ดาวน์โหลด MP4</a>
+      <!-- STATUS PANEL -->
+      <aside id="status-card" class="card hidden">
+        <div class="status-header">
+          <span id="status-title">กำลัง render…</span>
+          <span id="status-badge" class="badge badge-running">running</span>
         </div>
 
-        <div class="error hidden" id="error-box"></div>
+        <div class="progress-wrap">
+          <div class="progress-bar"><div class="progress-fill" id="prog-fill"></div></div>
+          <span class="progress-pct" id="prog-pct">0%</span>
+        </div>
+
+        <p class="stage-text" id="stage-text">queued</p>
+        <p class="elapsed-text" id="elapsed-text">0s</p>
+
+        <pre class="log-box" id="log-box"></pre>
+
+        <!-- Result -->
+        <div id="result-box" class="hidden">
+          <div class="result-meta" id="result-meta"></div>
+          <video controls playsinline id="result-video" class="result-video"></video>
+          <div class="result-actions">
+            <a id="dl-link" class="btn-dl" download>⬇  ดาวน์โหลด MP4</a>
+            <button id="new-btn" class="btn-new" type="button">+ Render ใหม่</button>
+          </div>
+        </div>
+
+        <div id="error-box" class="error-box hidden"></div>
       </aside>
     </main>
 
-    <footer>
-      <span>powered by</span>
-      <a href="https://github.com/heygen-com/hyperframes" target="_blank" rel="noopener">heygen-com/hyperframes</a>
-    </footer>
-
+    <footer>powered by <a href="https://github.com/heygen-com/hyperframes" target="_blank">HeyGen HyperFrames</a> + ffmpeg</footer>
     <script src="/app.js"></script>
   </body>
 </html>

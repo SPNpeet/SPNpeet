@@ -1,137 +1,162 @@
-const form = document.getElementById("render-form");
-const submitBtn = document.getElementById("submit-btn");
+/* ─── Elements ─────────────────────────────────────────────────────────────── */
+const form       = document.getElementById("render-form");
+const submitBtn  = document.getElementById("submit-btn");
+const btnLabel   = document.getElementById("btn-label");
+const fileInput  = document.getElementById("file-input");
+const dzText     = document.getElementById("dz-text");
+const dropzone   = document.getElementById("dropzone");
+const durSlider  = document.getElementById("dur-slider");
+const durVal     = document.getElementById("dur-val");
 const statusCard = document.getElementById("status-card");
-const barFill = document.getElementById("bar-fill");
-const barText = document.getElementById("bar-text");
-const stageText = document.getElementById("stage-text");
+const statusBadge = document.getElementById("status-badge");
+const statusTitle = document.getElementById("status-title");
+const progFill   = document.getElementById("prog-fill");
+const progPct    = document.getElementById("prog-pct");
+const stageText  = document.getElementById("stage-text");
 const elapsedText = document.getElementById("elapsed-text");
-const logOutput = document.getElementById("log-output");
-const result = document.getElementById("result");
+const logBox     = document.getElementById("log-box");
+const resultBox  = document.getElementById("result-box");
+const resultMeta = document.getElementById("result-meta");
 const resultVideo = document.getElementById("result-video");
-const downloadLink = document.getElementById("download-link");
-const errorBox = document.getElementById("error-box");
-const fileInput = form.querySelector('input[type="file"]');
-const fileLabel = form.querySelector(".file");
-const fileText = form.querySelector(".file-text");
-const accentInput = document.getElementById("accent-input");
-const accentHint = document.getElementById("accent-hint");
-const fieldsLandscape = document.getElementById("fields-landscape");
-const fieldsVertical = document.getElementById("fields-vertical");
-const clipDurationInput = document.getElementById("clip-duration");
-const formatRadios = form.querySelectorAll('input[name="format"]');
+const dlLink     = document.getElementById("dl-link");
+const newBtn     = document.getElementById("new-btn");
+const errorBox   = document.getElementById("error-box");
 
-/* ── Format toggle ── */
-const ACCENT_DEFAULTS = { landscape: "#22d3ee", vertical: "#f72585" };
-const ACCENT_HINTS = { landscape: "cyan · landscape default", vertical: "pink · TikTok/IG default" };
-const DUR_DEFAULTS = { landscape: "21", vertical: "17" };
-
-function applyFormat(fmt) {
-  fieldsLandscape.style.display = fmt === "landscape" ? "" : "none";
-  fieldsVertical.style.display = fmt === "vertical" ? "" : "none";
-  accentInput.value = ACCENT_DEFAULTS[fmt];
-  accentHint.textContent = ACCENT_HINTS[fmt];
-  if (!clipDurationInput._touched) clipDurationInput.value = DUR_DEFAULTS[fmt];
+/* ─── Duration slider ───────────────────────────────────────────────────────── */
+function fmtSeconds(s) {
+  const m = Math.floor(s / 60);
+  const sec = String(s % 60).padStart(2, "0");
+  return `${m}:${sec}`;
 }
-clipDurationInput.addEventListener("input", () => { clipDurationInput._touched = true; });
-formatRadios.forEach((r) => r.addEventListener("change", () => applyFormat(r.value)));
-applyFormat("landscape");
-
-/* ── File picker ── */
-fileInput.addEventListener("change", () => {
-  const f = fileInput.files?.[0];
-  if (f) fileText.textContent = `${f.name} · ${(f.size / 1e6).toFixed(1)} MB`;
+durSlider.addEventListener("input", () => {
+  durVal.textContent = fmtSeconds(Number(durSlider.value));
 });
 
-/* Drag-and-drop */
-["dragover", "dragenter"].forEach((ev) =>
-  fileLabel.addEventListener(ev, (e) => { e.preventDefault(); fileLabel.style.borderColor = "var(--accent)"; })
+/* ─── File drop ─────────────────────────────────────────────────────────────── */
+function setFile(file) {
+  if (!file || !file.type.startsWith("video/")) return;
+  const dt = new DataTransfer();
+  dt.items.add(file);
+  fileInput.files = dt.files;
+  dzText.innerHTML = `<strong>${file.name}</strong><br/><small>${(file.size / 1e6).toFixed(1)} MB · click to change</small>`;
+}
+
+fileInput.addEventListener("change", () => setFile(fileInput.files?.[0]));
+
+["dragover", "dragenter"].forEach(ev =>
+  dropzone.addEventListener(ev, e => { e.preventDefault(); dropzone.classList.add("drag-over"); })
 );
-["dragleave", "drop"].forEach((ev) =>
-  fileLabel.addEventListener(ev, () => { fileLabel.style.borderColor = ""; })
+["dragleave", "drop"].forEach(ev =>
+  dropzone.addEventListener(ev, () => dropzone.classList.remove("drag-over"))
 );
-fileLabel.addEventListener("drop", (e) => {
+dropzone.addEventListener("drop", e => {
   e.preventDefault();
-  const f = e.dataTransfer?.files?.[0];
-  if (f && f.type.startsWith("video/")) {
-    const dt = new DataTransfer();
-    dt.items.add(f);
-    fileInput.files = dt.files;
-    fileText.textContent = `${f.name} · ${(f.size / 1e6).toFixed(1)} MB`;
-  }
+  setFile(e.dataTransfer?.files?.[0]);
 });
 
-/* ── Submit ── */
-form.addEventListener("submit", async (event) => {
-  event.preventDefault();
+/* ─── Submit ────────────────────────────────────────────────────────────────── */
+form.addEventListener("submit", async e => {
+  e.preventDefault();
   if (!fileInput.files?.[0]) return;
 
   resetStatus();
   statusCard.classList.remove("hidden");
   submitBtn.disabled = true;
-  submitBtn.textContent = "อัปโหลด…";
+  btnLabel.textContent = "กำลังอัปโหลด…";
 
   let jobId;
   try {
-    const res = await fetch("/api/render", { method: "POST", body: new FormData(form) });
+    const res  = await fetch("/api/render", { method: "POST", body: new FormData(form) });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || "upload failed");
+    if (!res.ok) throw new Error(data.error || "Upload failed");
     jobId = data.jobId;
   } catch (err) {
     showError(err.message);
     return;
   }
 
-  submitBtn.textContent = "rendering…";
+  btnLabel.textContent = "Rendering…";
   pollJob(jobId);
 });
 
-function resetStatus() {
-  barFill.style.width = "0%";
-  barText.textContent = "0%";
-  stageText.textContent = "queued";
-  elapsedText.textContent = "0s";
-  logOutput.textContent = "";
-  result.classList.add("hidden");
-  errorBox.classList.add("hidden");
-}
-
-function showError(msg) {
-  errorBox.textContent = msg;
-  errorBox.classList.remove("hidden");
+/* ─── New render button ─────────────────────────────────────────────────────── */
+newBtn.addEventListener("click", () => {
+  statusCard.classList.add("hidden");
   submitBtn.disabled = false;
-  submitBtn.textContent = "▸ Render";
-}
+  btnLabel.textContent = "▸  Render คลิป";
+});
 
+/* ─── Poll ──────────────────────────────────────────────────────────────────── */
 async function pollJob(id) {
   const tick = async () => {
     try {
       const res = await fetch(`/api/jobs/${id}`);
       const job = await res.json();
-      if (!res.ok) throw new Error(job.error || "job error");
+      if (!res.ok) throw new Error(job.error || "Job error");
 
-      barFill.style.width = `${job.progress}%`;
-      barText.textContent = `${job.progress}%`;
-      stageText.textContent = job.stage || job.status;
-      elapsedText.textContent = `${job.elapsed}s elapsed`;
-      logOutput.textContent = (job.log || []).join("\n");
-      logOutput.scrollTop = logOutput.scrollHeight;
+      progFill.style.width = `${job.progress}%`;
+      progPct.textContent  = `${job.progress}%`;
+      stageText.textContent  = job.stage  || job.status;
+      elapsedText.textContent = `${job.elapsed}s`;
+      logBox.textContent     = (job.log || []).join("\n");
+      logBox.scrollTop       = logBox.scrollHeight;
 
       if (job.status === "done" && job.output) {
-        const url = `/renders/${encodeURIComponent(job.output)}`;
-        resultVideo.src = url;
-        downloadLink.href = url;
-        const fmtBadge = job.format === "vertical" ? "📱 1080×1920" : "🖥 1920×1080";
-        document.getElementById("status-title").textContent = `เสร็จแล้ว — ${fmtBadge}`;
-        result.classList.remove("hidden");
-        submitBtn.disabled = false;
-        submitBtn.textContent = "▸ Render อีกครั้ง";
+        markDone(job);
         return;
       }
-      if (job.status === "error") { showError(job.error || "render failed"); return; }
-      setTimeout(tick, 1000);
+      if (job.status === "error") {
+        showError(job.error || "render failed");
+        return;
+      }
+      setTimeout(tick, 1200);
     } catch (err) {
       showError(err.message);
     }
   };
   tick();
+}
+
+function markDone(job) {
+  statusBadge.textContent  = "done ✓";
+  statusBadge.className    = "badge badge-done";
+  statusTitle.textContent  = "เสร็จแล้ว";
+
+  const url = `/renders/${encodeURIComponent(job.output)}`;
+  resultVideo.src  = url;
+  dlLink.href      = url;
+  dlLink.download  = job.output;
+
+  const fmtLabel = job.format === "vertical" ? "📱 1080×1920 (TikTok/IG)" : "🖥 1920×1080 (YouTube)";
+  const dur      = job.meta?.durationOut ? `${job.meta.durationOut}s` : "";
+  const segs     = job.meta?.segments    ? ` · ${job.meta.segments} segments` : "";
+  resultMeta.textContent = `${fmtLabel}  ${dur}${segs}`;
+
+  resultBox.classList.remove("hidden");
+  submitBtn.disabled  = false;
+  btnLabel.textContent = "▸  Render คลิป";
+}
+
+/* ─── Helpers ───────────────────────────────────────────────────────────────── */
+function resetStatus() {
+  progFill.style.width    = "0%";
+  progPct.textContent     = "0%";
+  stageText.textContent   = "queued";
+  elapsedText.textContent = "0s";
+  logBox.textContent      = "";
+  resultBox.classList.add("hidden");
+  errorBox.classList.add("hidden");
+  statusBadge.textContent = "running";
+  statusBadge.className   = "badge badge-running";
+  statusTitle.textContent = "กำลัง render…";
+}
+
+function showError(msg) {
+  statusBadge.textContent = "error";
+  statusBadge.className   = "badge badge-error";
+  statusTitle.textContent = "เกิดข้อผิดพลาด";
+  errorBox.textContent    = msg;
+  errorBox.classList.remove("hidden");
+  submitBtn.disabled      = false;
+  btnLabel.textContent    = "▸  ลองใหม่";
 }
