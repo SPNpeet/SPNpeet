@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>video-studio · viral clip cooker</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <header>
+      <div class="brand">
+        <span class="logo"></span>
+        <h1>video-studio</h1>
+      </div>
+      <p class="tagline">อัปโหลดคลิป → ใส่ hook + lower-third + transition → render เป็น MP4 1080p พร้อมโพสต์</p>
+    </header>
+
+    <main>
+      <form id="render-form" class="card">
+        <section>
+          <h2>1. คลิปของคุณ</h2>
+          <label class="file">
+            <input type="file" name="clip" accept="video/*" required />
+            <span class="file-text">เลือกไฟล์วิดีโอ (mp4/mov/webm, สูงสุด 200MB)</span>
+          </label>
+          <div class="row">
+            <label>
+              เริ่มที่วินาที
+              <input type="number" name="clipStart" value="0" min="0" step="0.1" />
+            </label>
+            <label>
+              ความยาวของคลิปบนไทม์ไลน์
+              <input type="number" name="clipDuration" value="21" min="1" step="0.1" />
+            </label>
+          </div>
+        </section>
+
+        <section>
+          <h2>2. Hook + caption</h2>
+          <div class="row">
+            <label>
+              Intro title
+              <input type="text" name="introTitle" value="NEW DROP" maxlength="40" />
+            </label>
+            <label>
+              Intro subtitle
+              <input type="text" name="introSubtitle" value="Coming this week" maxlength="60" />
+            </label>
+          </div>
+          <label>
+            Lower-third caption
+            <input type="text" name="caption" value="Behind the scenes" maxlength="80" />
+          </label>
+        </section>
+
+        <section>
+          <h2>3. Outro + accent</h2>
+          <div class="row">
+            <label>
+              Outro headline
+              <input type="text" name="outroTitle" value="FOLLOW @SPNpeet" maxlength="40" />
+            </label>
+            <label>
+              Outro subline
+              <input type="text" name="outroSubtitle" value="More on the way" maxlength="60" />
+            </label>
+          </div>
+          <label class="color">
+            สีไฮไลต์
+            <input type="color" name="accent" value="#22d3ee" />
+          </label>
+        </section>
+
+        <button type="submit" id="submit-btn">▸ Render</button>
+      </form>
+
+      <aside class="card status hidden" id="status-card">
+        <h2>กำลังทำงาน</h2>
+        <div class="progress-row">
+          <div class="bar">
+            <div class="bar-fill" id="bar-fill"></div>
+          </div>
+          <span id="bar-text">0%</span>
+        </div>
+        <p class="stage" id="stage-text">queued</p>
+        <p class="elapsed" id="elapsed-text">0s</p>
+        <pre class="log" id="log-output"></pre>
+
+        <div class="result hidden" id="result">
+          <h3>เสร็จแล้ว</h3>
+          <video controls playsinline id="result-video"></video>
+          <a class="download" id="download-link" download>ดาวน์โหลด MP4</a>
+        </div>
+
+        <div class="error hidden" id="error-box"></div>
+      </aside>
+    </main>
+
+    <footer>
+      <span>powered by</span>
+      <a href="https://github.com/heygen-com/hyperframes" target="_blank" rel="noopener">heygen-com/hyperframes</a>
+    </footer>
+
+    <script src="/app.js"></script>
+  </body>
+</html>

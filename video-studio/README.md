@@ -28,6 +28,16 @@ npm run demo:clip   # สร้าง assets/clip.mp4 จาก ffmpeg testsrc (
 
 ## ใช้งาน
 
+### หน้าเว็บ (วิธีที่ง่ายที่สุด)
+
+```bash
+npm run web
+```
+
+เปิด <http://localhost:4321> → อัปโหลดคลิป → กรอกฟอร์ม (hook, caption, accent) → กด Render → ดู progress + ดาวน์โหลด MP4 ได้ในหน้าเดียวกัน เซิร์ฟเวอร์จะ re-encode อัปโหลดให้เป็น keyframe ทุก 1 วินาทีเองก่อนส่งเข้า HyperFrames (กัน frame freeze ตอน seek)
+
+### CLI
+
 ```bash
 npm run dev        # preview ใน browser พร้อม live reload
 npm run check      # lint + validate + inspect
@@ -63,6 +73,9 @@ video-studio/
 ├── assets/
 │   ├── vendor/gsap.min.js  # GSAP bundle (ไม่ใช่ CDN เพื่อ deterministic)
 │   └── clip.mp4            # คลิปอินพุต (gitignored, สร้างจาก demo:clip หรือ drop เอง)
+├── web/
+│   ├── server.js           # Express + Multer, spawn hyperframes render
+│   └── public/             # หน้าเว็บฟอร์ม + JS polling progress
 ├── hyperframes.json
 ├── meta.json
 └── package.json
