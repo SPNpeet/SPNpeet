@@ -12,11 +12,30 @@
         <span class="logo"></span>
         <h1>video-studio</h1>
       </div>
-      <p class="tagline">อัปโหลดคลิป → ใส่ hook + lower-third + transition → render เป็น MP4 1080p พร้อมโพสต์</p>
+      <p class="tagline">อัปโหลดคลิป → เลือก format → ใส่ hook + caption → render MP4 พร้อมโพสต์</p>
     </header>
 
     <main>
       <form id="render-form" class="card">
+
+        <section>
+          <h2>0. เลือก format</h2>
+          <div class="format-grid">
+            <label class="format-card">
+              <input type="radio" name="format" value="landscape" checked />
+              <span class="fmt-icon">🖥</span>
+              <span class="fmt-label">16:9 Landscape</span>
+              <span class="fmt-sub">YouTube · Shorts preview</span>
+            </label>
+            <label class="format-card active" id="fmt-vertical">
+              <input type="radio" name="format" value="vertical" />
+              <span class="fmt-icon">📱</span>
+              <span class="fmt-label">9:16 Vertical</span>
+              <span class="fmt-sub">TikTok · IG Reels</span>
+            </label>
+          </div>
+        </section>
+
         <section>
           <h2>1. คลิปของคุณ</h2>
           <label class="file">
@@ -28,46 +47,77 @@
               เริ่มที่วินาที
               <input type="number" name="clipStart" value="0" min="0" step="0.1" />
             </label>
-            <label>
-              ความยาวของคลิปบนไทม์ไลน์
-              <input type="number" name="clipDuration" value="21" min="1" step="0.1" />
+            <label id="dur-label">
+              ความยาวบนไทม์ไลน์
+              <input type="number" name="clipDuration" id="clip-duration" value="21" min="1" step="0.1" />
             </label>
           </div>
         </section>
 
-        <section>
-          <h2>2. Hook + caption</h2>
-          <div class="row">
+        <!-- Landscape fields -->
+        <div id="fields-landscape">
+          <section>
+            <h2>2. Hook + caption</h2>
+            <div class="row">
+              <label>
+                Intro title
+                <input type="text" name="introTitle" value="NEW DROP" maxlength="40" />
+              </label>
+              <label>
+                Intro subtitle
+                <input type="text" name="introSubtitle" value="Coming this week" maxlength="60" />
+              </label>
+            </div>
             <label>
-              Intro title
-              <input type="text" name="introTitle" value="NEW DROP" maxlength="40" />
+              Lower-third caption
+              <input type="text" name="caption" value="Behind the scenes" maxlength="80" />
             </label>
+          </section>
+          <section>
+            <h2>3. Outro</h2>
+            <div class="row">
+              <label>Outro headline<input type="text" name="outroTitle" value="FOLLOW @SPNpeet" maxlength="40" /></label>
+              <label>Outro subline<input type="text" name="outroSubtitle" value="More on the way" maxlength="60" /></label>
+            </div>
+          </section>
+        </div>
+
+        <!-- Vertical / TikTok+IG fields -->
+        <div id="fields-vertical" style="display:none">
+          <section>
+            <h2>2. Hook (วินาทีแรก — สำคัญที่สุด)</h2>
+            <div class="row">
+              <label>
+                Hook text ใหญ่
+                <input type="text" name="hookText" value="Wait for it..." maxlength="40" />
+              </label>
+              <label>
+                Hook subtext
+                <input type="text" name="hookSub" value="this is insane 🔥" maxlength="60" />
+              </label>
+            </div>
+          </section>
+          <section>
+            <h2>3. Mid-clip caption</h2>
             <label>
-              Intro subtitle
-              <input type="text" name="introSubtitle" value="Coming this week" maxlength="60" />
+              ข้อความระหว่างคลิป
+              <input type="text" name="midCaption" value="Behind the scenes" maxlength="80" />
             </label>
-          </div>
-          <label>
-            Lower-third caption
-            <input type="text" name="caption" value="Behind the scenes" maxlength="80" />
-          </label>
-        </section>
+          </section>
+          <section>
+            <h2>4. CTA outro</h2>
+            <div class="row">
+              <label>CTA headline<input type="text" name="ctaText" value="FOLLOW @SPNpeet" maxlength="40" /></label>
+              <label>CTA subline<input type="text" name="ctaSub" value="new drops every week" maxlength="60" /></label>
+            </div>
+          </section>
+        </div>
 
         <section>
-          <h2>3. Outro + accent</h2>
-          <div class="row">
-            <label>
-              Outro headline
-              <input type="text" name="outroTitle" value="FOLLOW @SPNpeet" maxlength="40" />
-            </label>
-            <label>
-              Outro subline
-              <input type="text" name="outroSubtitle" value="More on the way" maxlength="60" />
-            </label>
-          </div>
+          <h2 id="accent-label">สีไฮไลต์</h2>
           <label class="color">
-            สีไฮไลต์
-            <input type="color" name="accent" value="#22d3ee" />
+            <input type="color" name="accent" id="accent-input" value="#22d3ee" />
+            <span id="accent-hint">cyan · landscape default</span>
           </label>
         </section>
 
@@ -75,11 +125,9 @@
       </form>
 
       <aside class="card status hidden" id="status-card">
-        <h2>กำลังทำงาน</h2>
+        <h2 id="status-title">กำลังทำงาน</h2>
         <div class="progress-row">
-          <div class="bar">
-            <div class="bar-fill" id="bar-fill"></div>
-          </div>
+          <div class="bar"><div class="bar-fill" id="bar-fill"></div></div>
           <span id="bar-text">0%</span>
         </div>
         <p class="stage" id="stage-text">queued</p>
@@ -87,7 +135,7 @@
         <pre class="log" id="log-output"></pre>
 
         <div class="result hidden" id="result">
-          <h3>เสร็จแล้ว</h3>
+          <h3>เสร็จแล้ว ✓</h3>
           <video controls playsinline id="result-video"></video>
           <a class="download" id="download-link" download>ดาวน์โหลด MP4</a>
         </div>
