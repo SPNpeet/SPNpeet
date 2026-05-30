@@ -1,0 +1,14 @@
+{
+  "name": "@spnpeet/api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Golang Transaction Engine (driven through Turborepo via Go toolchain).",
+  "scripts": {
+    "dev": "go run ./cmd/server",
+    "build": "go build -trimpath -ldflags=\"-s -w\" -o bin/server ./cmd/server",
+    "test": "go test ./...",
+    "lint": "go vet ./...",
+    "typecheck": "go build ./...",
+    "clean": "rm -rf bin tmp"
+  }
+}

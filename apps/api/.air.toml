@@ -1,0 +1,13 @@
+# Air live-reload config for local Go development (`air`).
+root = "."
+tmp_dir = "tmp"
+
+[build]
+  cmd = "go build -o ./tmp/server ./cmd/server"
+  bin = "./tmp/server"
+  include_ext = ["go"]
+  exclude_dir = ["tmp", "vendor"]
+  delay = 500
+
+[misc]
+  clean_on_exit = true
