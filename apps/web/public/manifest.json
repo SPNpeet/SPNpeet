@@ -1,0 +1,35 @@
+{
+  "name": "SPNpeet POS",
+  "short_name": "SPNpeet",
+  "description": "Offline-first Point of Sale & Inventory terminal",
+  "id": "/pos",
+  "start_url": "/pos",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "categories": ["business", "productivity", "shopping"],
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/maskable.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "New Sale",
+      "short_name": "Sale",
+      "url": "/pos",
+      "description": "Open the register"
+    }
+  ]
+}
