@@ -44,3 +44,10 @@ coverage/
 # Supabase
 supabase/.branches
 supabase/.temp
+
+# next-pwa generated service worker artifacts
+apps/web/public/sw.js
+apps/web/public/sw.js.map
+apps/web/public/workbox-*.js
+apps/web/public/workbox-*.js.map
+apps/web/public/fallback-*.js
