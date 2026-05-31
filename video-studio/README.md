@@ -54,27 +54,40 @@ npm run web               # bind 0.0.0.0 — เข้าจากเครื�
 
 ## เข้าใช้งานจากมือถือ
 
-### 🌍 ออนไลน์ตลอด — deploy ขึ้น cloud (1 คำสั่ง)
+### 🚀 Deploy แบบ One-click (ฟรี ไม่ต้องลง CLI)
 
-ดู `DEPLOY.md` สำหรับวิธีเต็ม สรุปย่อ:
+ทั้ง 3 ปุ่มนี้รับ Dockerfile ใน repo นี้แล้ว provision ทุกอย่างให้อัตโนมัติ — แค่ลงชื่อด้วย GitHub แล้วกด Deploy:
+
+| Provider | ปุ่ม | Free tier | หมายเหตุ |
+|---|---|---|---|
+| **Render** | [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy) | 750h/mo (พอใช้ส่วนตัว) | อ่าน `render.yaml` ในรูท ฟอร์ค repo แล้ววางลิงก์ |
+| **Railway** | [![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template?template=https://github.com/) | $5 credit/mo | อ่าน `railway.json` |
+| **Fly.io** | (CLI) | 3GB volume + 1GB RAM | ใช้สคริปต์ด้านล่าง |
+
+**วิธีกด Render ปุ่มเดียวเสร็จ:**
+1. Fork repo นี้ขึ้น GitHub ของคุณก่อน
+2. กดปุ่ม Deploy to Render ด้านบน
+3. ลงชื่อด้วย GitHub → เลือก repo ที่เพิ่ง fork → กด **Apply**
+4. Render จะอ่าน `render.yaml` build Docker image (~5 นาทีเพราะ compile whisper.cpp) แล้ว provision disk 10GB ให้
+5. เสร็จได้ URL `https://video-studio-xxx.onrender.com` เปิดบนมือถือไหนก็ได้
+
+### ⚡ Fly.io แบบ one-script
 
 ```bash
-# Fly.io (ฟรี 3GB / 1GB RAM)
-curl -L https://fly.io/install.sh | sh
-fly auth signup
-fly launch --copy-config --no-deploy
-fly volumes create data    --size 1  --region sin --yes
-fly volumes create renders --size 10 --region sin --yes
-fly deploy
+cd video-studio
+bash scripts/deploy-fly.sh
 ```
 
-เสร็จแล้วได้ HTTPS URL `https://video-studio-xxx.fly.dev` เปิดบนมือถือไหนก็ได้ — Add to Home Screen ติดตั้งเป็นแอปจริง
+สคริปต์จะ:
+1. ติดตั้ง `flyctl` ถ้ายังไม่มี
+2. เปิดเบราว์เซอร์ให้สมัคร/ล็อกอิน Fly.io (ฟรี)
+3. สร้างแอป + persistent volumes (data 1GB / renders 10GB) ที่ region สิงคโปร์
+4. Set `PUBLIC_URL` ให้ใช้ใน QR code + share links
+5. Deploy
 
-อีก 2 ทาง:
-- **Self-host บน VPS** $5/mo `docker compose up -d --build` + Caddy/Nginx ทำ HTTPS
-- **Self-host บน NAS/PC ที่บ้าน** + `cloudflared tunnel --url http://localhost:8080` แชร์ออกอินเทอร์เน็ตชั่วคราว
+เสร็จได้ `https://<app>.fly.dev` พร้อม HTTPS auto
 
-### 🏠 LAN (เร็วที่สุดสำหรับลองเล่น)
+### 🏠 LAN (เร็วที่สุดสำหรับลองที่บ้าน)
 
 รัน `npm run web` แล้วดูที่ **terminal** — มันจะโชว์ IP จริงของเครื่องคุณ:
 
@@ -87,7 +100,15 @@ fly deploy
 ```
 
 มือถือต้อง **เชื่อม wifi เดียวกัน** กับเครื่องที่รัน server แล้วสแกน QR ในเทอร์มินัล
-หากไม่เจอ IP `📱` ในเทอร์มินัล แสดงว่าเครื่องไม่มี LAN interface — ใช้ cloud หรือ tunnel แทน
+
+### 🌐 Self-host + Cloudflare Tunnel (ฟรี, ใช้ที่บ้านได้)
+
+```bash
+docker compose up -d --build              # รันแอปด้วย Docker
+cloudflared tunnel --url http://localhost:8080   # แชร์ออกเน็ตชั่วคราว (ไม่ต้องสมัคร)
+```
+
+cloudflared จะให้ URL `https://xxx.trycloudflare.com` ที่ใช้บนมือถือไหนก็ได้
 
 ---
 

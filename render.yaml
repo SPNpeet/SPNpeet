@@ -1,0 +1,28 @@
+# Render.com Blueprint — one-click deploy
+# Push to GitHub, then visit:
+#   https://render.com/deploy?repo=https://github.com/<you>/<your-repo>
+# It picks up this file and provisions everything automatically.
+
+services:
+  - type: web
+    name: video-studio
+    runtime: docker
+    plan: starter         # $7/mo · 0.5 CPU / 512MB. Use "free" for 750h/mo trial.
+    dockerfilePath: ./video-studio/Dockerfile
+    dockerContext: ./video-studio
+    region: singapore     # closest to Thailand
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "8080"
+      - key: DATA_DIR
+        value: /data
+      - key: RENDERS_DIR
+        value: /renders
+    disk:
+      name: renders
+      mountPath: /renders
+      sizeGB: 10
