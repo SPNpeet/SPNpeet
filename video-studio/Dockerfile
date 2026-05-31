@@ -6,9 +6,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /src
+# -j2 keeps memory in check on free-tier build hosts (Render free
+# build VM is shared and OOM-kills aggressive parallel C++ builds).
 RUN git clone --depth 1 https://github.com/ggml-org/whisper.cpp.git . \
  && cmake -B build -DGGML_OPENMP=OFF \
- && cmake --build build -j "$(nproc)" --config Release --target whisper-cli \
+ && cmake --build build -j2 --config Release --target whisper-cli \
  && bash ./models/download-ggml-model.sh base
 
 RUN mkdir -p /out \
@@ -52,7 +54,9 @@ ENV NODE_ENV=production \
     PORT=8080 \
     DATA_DIR=/app/data \
     RENDERS_DIR=/app/renders \
-    UPLOAD_DIR=/app/assets/_uploads
+    UPLOAD_DIR=/app/assets/_uploads \
+    FFMPEG_THREADS=2 \
+    FFMPEG_PRESET=veryfast
 
 EXPOSE 8080
 

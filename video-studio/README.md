@@ -60,17 +60,23 @@ npm run web               # bind 0.0.0.0 — เข้าจากเครื�
 
 **1. กดลิงก์นี้:**
 
-👉 [**Deploy to Render**](https://render.com/deploy?repo=https://github.com/SPNpeet/SPNpeet&branch=claude/connect-hyperframe-video-yR4Xm)
+👉 [**Deploy to Render**](https://render.com/deploy?repo=https://github.com/SPNpeet/SPNpeet)
 
-**2. ทำตามขั้นตอน:**
-- กด **Sign up with GitHub** (ฟรี ใช้ GitHub account ที่มีอยู่)
-- Render จะถามสิทธิ์เข้าถึง repo → กด Authorize
-- จะเห็นหน้า "New Blueprint Instance" → ตั้งชื่อ (เช่น `video-studio`) → กด **Apply**
-- รอ build ~5–7 นาที (compile whisper.cpp ครั้งแรก) — เห็น log สดในหน้า dashboard
+**2. ทำตามขั้นตอน (ทั้งหมด 6 คลิก ~3 นาที + รอ build 5–10 นาที):**
+
+| คลิก | สิ่งที่ต้องทำ |
+|---|---|
+| 1 | **Sign up with GitHub** (ฟรี ใช้ account `@SPNpeet` ที่มีอยู่) |
+| 2 | กด **Authorize Render** ให้สิทธิ์อ่าน repo |
+| 3 | หน้า "New Blueprint Instance" — เลือก repo `SPNpeet/SPNpeet` |
+| 4 | **‼️ เลือก Branch: `claude/connect-hyperframe-video-yR4Xm`** (สำคัญมาก default จะเป็น `main` ซึ่งยังไม่มี blueprint) |
+| 5 | ตั้งชื่อ Blueprint (เช่น `video-studio`) แล้วกด **Apply** |
+| 6 | รอ build ~5–10 นาที (compile whisper.cpp ครั้งแรก) — เห็น log live ในหน้า dashboard |
 
 **3. ได้ URL:**
-- เปิด tab ของ service → URL จะอยู่ที่ด้านบน ประมาณ `https://video-studio-xxx.onrender.com`
-- เปิดบนมือถือ → Add to Home Screen เป็นแอปจริง
+- เข้า tab ของ service → URL อยู่ด้านบน ประมาณ `https://video-studio-xxx.onrender.com`
+- เปิดบนมือถือ → Safari **Share → Add to Home Screen** → กลายเป็นแอป
+- Server detect `RENDER_EXTERNAL_URL` อัตโนมัติ → QR code ใน `/health` ใช้ URL จริง
 
 **ข้อจำกัด free tier:**
 - 0.1 CPU / 512MB RAM → render ช้ากว่า local 2–5 เท่า (คลิป 1 นาที ใช้เวลา 3–8 นาที)

@@ -174,9 +174,15 @@ export async function autoEdit(src, output, options = {}, onProgress = () => {})
       if (!autoCaption) return { ass: null, phraseCount: 0 };
       if (!(await whisperAvailable())) return { ass: null, phraseCount: 0, reason: "no-whisper" };
       onProgress({ stage: "Auto-transcribing speech…", progress: 22 });
-      return await generateCaptions(src, segments, {
-        language, width: spec.w, height: spec.h, accent, workDir,
-      });
+      try {
+        return await generateCaptions(src, segments, {
+          language, width: spec.w, height: spec.h, accent, workDir,
+        });
+      } catch (err) {
+        // Whisper may OOM or crash on tiny VMs — don't fail the whole render
+        console.warn("[autoEdit] captions failed:", err.message);
+        return { ass: null, phraseCount: 0, reason: "whisper-error" };
+      }
     })();
     tasks.push(captionsPromise);
 
@@ -340,12 +346,19 @@ export async function autoEdit(src, output, options = {}, onProgress = () => {})
     } else {
       args.push("-an");
     }
+
+    // Thread cap — Render free (0.1 CPU) and Fly free are CPU-throttled, so
+    // letting ffmpeg spawn $(nproc) threads (often 8+) just thrashes context.
+    // FFMPEG_THREADS=0 means "let ffmpeg decide".
+    const ffThreads = Number(process.env.FFMPEG_THREADS ?? 2);
+    if (ffThreads > 0) args.push("-threads", String(ffThreads));
+
     args.push(
       "-c:v",    "libx264",
       "-profile:v", "high",
       "-level",  "4.1",
-      "-crf",    "18",
-      "-preset", "fast",
+      "-crf",    "20",
+      "-preset", process.env.FFMPEG_PRESET || "veryfast",
       "-pix_fmt","yuv420p",
       "-movflags","+faststart",
       "-r",      "30",

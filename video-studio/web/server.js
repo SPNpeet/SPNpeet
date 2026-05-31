@@ -18,7 +18,15 @@ const RENDERS_DIR = process.env.RENDERS_DIR || path.join(ROOT, "renders");
 const DATA_DIR    = process.env.DATA_DIR    || path.join(ROOT, "data");
 const PUBLIC_DIR  = path.join(__dirname, "public");
 const PORT        = Number(process.env.PORT) || 4321;
-const PUBLIC_URL  = process.env.PUBLIC_URL  || "";
+
+// Render and Fly expose the public URL automatically — pick it up so the QR
+// code + Web Share point at the real domain without operator config.
+const PUBLIC_URL =
+  process.env.PUBLIC_URL ||
+  process.env.RENDER_EXTERNAL_URL ||
+  (process.env.FLY_APP_NAME ? `https://${process.env.FLY_APP_NAME}.fly.dev` : "") ||
+  "";
+
 const JOB_DB_PATH = path.join(DATA_DIR, "jobs.json");
 
 await Promise.all([
