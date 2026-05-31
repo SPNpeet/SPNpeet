@@ -54,40 +54,49 @@ npm run web               # bind 0.0.0.0 — เข้าจากเครื�
 
 ## เข้าใช้งานจากมือถือ
 
-### 🚀 Deploy แบบ One-click (ฟรี ไม่ต้องลง CLI)
+### 🚀 Deploy ฟรี — One-click จาก browser (เร็วที่สุด ปลอดภัยที่สุด)
 
-ทั้ง 3 ปุ่มนี้รับ Dockerfile ใน repo นี้แล้ว provision ทุกอย่างให้อัตโนมัติ — แค่ลงชื่อด้วย GitHub แล้วกด Deploy:
+ไม่ต้องลง CLI ไม่ต้องแชร์ token ไม่ต้องผูกบัตรเครดิต
 
-| Provider | ปุ่ม | Free tier | หมายเหตุ |
+**1. กดลิงก์นี้:**
+
+👉 [**Deploy to Render**](https://render.com/deploy?repo=https://github.com/SPNpeet/SPNpeet&branch=claude/connect-hyperframe-video-yR4Xm)
+
+**2. ทำตามขั้นตอน:**
+- กด **Sign up with GitHub** (ฟรี ใช้ GitHub account ที่มีอยู่)
+- Render จะถามสิทธิ์เข้าถึง repo → กด Authorize
+- จะเห็นหน้า "New Blueprint Instance" → ตั้งชื่อ (เช่น `video-studio`) → กด **Apply**
+- รอ build ~5–7 นาที (compile whisper.cpp ครั้งแรก) — เห็น log สดในหน้า dashboard
+
+**3. ได้ URL:**
+- เปิด tab ของ service → URL จะอยู่ที่ด้านบน ประมาณ `https://video-studio-xxx.onrender.com`
+- เปิดบนมือถือ → Add to Home Screen เป็นแอปจริง
+
+**ข้อจำกัด free tier:**
+- 0.1 CPU / 512MB RAM → render ช้ากว่า local 2–5 เท่า (คลิป 1 นาที ใช้เวลา 3–8 นาที)
+- Spin-down ตอน idle 15 นาที → request แรกหลัง idle รอ ~40 วินาทีให้ container ตื่น
+- ไม่มี persistent disk → ดาวน์โหลด MP4 ทันทีหลัง render เสร็จ ไม่งั้นหายตอน restart
+- 750 ชั่วโมง/เดือน ฟรี (พอใช้ส่วนตัว)
+
+**Upgrade เป็น Starter ($7/mo)** สำหรับ: always-on / 0.5 CPU / persistent disk → render ปกติ ไฟล์อยู่ถาวร  
+แก้บรรทัด `plan: free` → `plan: starter` ใน `render.yaml` แล้วเพิ่ม `disk:` block ดูใน `DEPLOY.md`
+
+---
+
+### ⚡ ทางเลือกอื่น
+
+| ทาง | คำสั่ง | Free tier | จุดเด่น |
 |---|---|---|---|
-| **Render** | [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy) | 750h/mo (พอใช้ส่วนตัว) | อ่าน `render.yaml` ในรูท ฟอร์ค repo แล้ววางลิงก์ |
-| **Railway** | [![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template?template=https://github.com/) | $5 credit/mo | อ่าน `railway.json` |
-| **Fly.io** | (CLI) | 3GB volume + 1GB RAM | ใช้สคริปต์ด้านล่าง |
+| **Fly.io** (script) | `bash scripts/deploy-fly.sh` | 1GB RAM + persistent disk | resources ดีกว่า Render free |
+| **Railway** | gh login + connect repo (ใช้ `railway.json`) | $5 credit/mo | UI ดูง่าย |
+| **Self-host + cloudflared** | `docker compose up` + `cloudflared tunnel --url http://localhost:8080` | ฟรี (เน็ตที่บ้าน) | ข้อมูลอยู่กับเรา |
+| **LAN + QR** | `npm run web` แล้วสแกน QR | ฟรี | เร็วสุดสำหรับลองในบ้าน |
 
-**วิธีกด Render ปุ่มเดียวเสร็จ:**
-1. Fork repo นี้ขึ้น GitHub ของคุณก่อน
-2. กดปุ่ม Deploy to Render ด้านบน
-3. ลงชื่อด้วย GitHub → เลือก repo ที่เพิ่ง fork → กด **Apply**
-4. Render จะอ่าน `render.yaml` build Docker image (~5 นาทีเพราะ compile whisper.cpp) แล้ว provision disk 10GB ให้
-5. เสร็จได้ URL `https://video-studio-xxx.onrender.com` เปิดบนมือถือไหนก็ได้
+ดู `DEPLOY.md` สำหรับรายละเอียดเต็ม
 
-### ⚡ Fly.io แบบ one-script
+---
 
-```bash
-cd video-studio
-bash scripts/deploy-fly.sh
-```
-
-สคริปต์จะ:
-1. ติดตั้ง `flyctl` ถ้ายังไม่มี
-2. เปิดเบราว์เซอร์ให้สมัคร/ล็อกอิน Fly.io (ฟรี)
-3. สร้างแอป + persistent volumes (data 1GB / renders 10GB) ที่ region สิงคโปร์
-4. Set `PUBLIC_URL` ให้ใช้ใน QR code + share links
-5. Deploy
-
-เสร็จได้ `https://<app>.fly.dev` พร้อม HTTPS auto
-
-### 🏠 LAN (เร็วที่สุดสำหรับลองที่บ้าน)
+### 🏠 LAN — ใช้ที่บ้านบน wifi เดียวกัน
 
 รัน `npm run web` แล้วดูที่ **terminal** — มันจะโชว์ IP จริงของเครื่องคุณ:
 
@@ -100,15 +109,6 @@ bash scripts/deploy-fly.sh
 ```
 
 มือถือต้อง **เชื่อม wifi เดียวกัน** กับเครื่องที่รัน server แล้วสแกน QR ในเทอร์มินัล
-
-### 🌐 Self-host + Cloudflare Tunnel (ฟรี, ใช้ที่บ้านได้)
-
-```bash
-docker compose up -d --build              # รันแอปด้วย Docker
-cloudflared tunnel --url http://localhost:8080   # แชร์ออกเน็ตชั่วคราว (ไม่ต้องสมัคร)
-```
-
-cloudflared จะให้ URL `https://xxx.trycloudflare.com` ที่ใช้บนมือถือไหนก็ได้
 
 ---
 
