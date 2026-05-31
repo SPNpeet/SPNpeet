@@ -1,7 +1,9 @@
 import express from "express";
 import multer from "multer";
+import qrcode from "qrcode";
 import { randomUUID } from "node:crypto";
 import { promises as fs, statSync } from "node:fs";
+import { networkInterfaces } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { autoEdit } from "../pipeline/auto_edit.js";
@@ -127,6 +129,45 @@ app.get("/api/jobs/:id", (req, res) => {
   });
 });
 
-app.listen(PORT, () =>
-  console.log(`video-studio  →  http://localhost:${PORT}`)
-);
+// ─── LAN address discovery + QR code at startup ──────────────────────────────
+
+function lanAddresses() {
+  const out = [];
+  const nics = networkInterfaces();
+  for (const list of Object.values(nics)) {
+    for (const ni of list || []) {
+      if (ni.family === "IPv4" && !ni.internal) out.push(ni.address);
+    }
+  }
+  return out;
+}
+
+async function printStartupBanner(port) {
+  const lines = [
+    "",
+    "  ┌────────────────────────────────────────┐",
+    "  │  video-studio                          │",
+    "  │  open on phone or any device on LAN    │",
+    "  └────────────────────────────────────────┘",
+    "",
+    `  💻  http://localhost:${port}`,
+  ];
+  const lans = lanAddresses();
+  for (const ip of lans) lines.push(`  📱  http://${ip}:${port}`);
+  console.log(lines.join("\n"));
+
+  if (lans.length > 0) {
+    try {
+      const url = `http://${lans[0]}:${port}`;
+      const qr = await qrcode.toString(url, { type: "terminal", small: true });
+      console.log("\n  scan with your phone camera:\n");
+      console.log(qr);
+    } catch {
+      /* QR is optional */
+    }
+  } else {
+    console.log("\n  (no LAN interface detected — server is loopback only)\n");
+  }
+}
+
+app.listen(PORT, "0.0.0.0", () => printStartupBanner(PORT));

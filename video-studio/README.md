@@ -45,23 +45,54 @@
 cd video-studio
 npm install
 npm run install:whisper   # สร้าง whisper.cpp + ดาวน์โหลด base model (~150MB, ครั้งเดียว)
-npm run web               # เปิด http://localhost:4321
+npm run web               # bind 0.0.0.0 — เข้าจากเครื่องไหนใน LAN ก็ได้
 ```
 
 ถ้าข้าม `npm run install:whisper` ระบบจะทำงานปกติ แค่ไม่มี auto-captions
 
 ---
 
+## เข้าใช้งานจากมือถือ
+
+เมื่อรัน `npm run web` server จะพิมพ์ URL ของทุก network interface พร้อม **QR code** ในเทอร์มินัล:
+
+```
+  💻  http://localhost:4321
+  📱  http://192.168.1.42:4321
+```
+
+**บนมือถือ:**
+1. เปิดกล้อง iPhone หรือ Google Lens บน Android → สแกน QR
+2. เปิดหน้าเว็บ → **"Add to Home Screen"** ใน Safari/Chrome เพื่อติดตั้งเป็น PWA
+3. ไอคอน video-studio จะอยู่บนหน้าจอเหมือนแอป
+
+> ต้อง connect wifi เดียวกับเครื่องที่รัน server  
+> ถ้าจะใช้ public access ให้ใช้ tunneling เช่น `cloudflared tunnel` หรือ `ngrok http 4321`
+
+---
+
+## ฟีเจอร์ mobile-first
+
+- **Responsive layout** — single column บนมือถือ, two column บน desktop ≥880px
+- **Touch targets** ≥48px ทุกปุ่ม/input ตาม WCAG
+- **Safe-area insets** สำหรับ iPhone notch + home indicator
+- **PWA installable** — manifest + icons 192/512/180 + service worker (cache shell)
+- **Web Share API** — กดปุ่ม Share แล้วใช้ share sheet ของระบบส่ง MP4 ไป TikTok/IG/Line ได้ตรงๆ
+- **Haptic feedback** — สั่นเบาๆ ตอนเลือกไฟล์ + ตอน render เสร็จ
+- **input modes** ที่เหมาะกับ mobile keyboard (autocapitalize)
+- **Visible slider fill** ทุก browser (Chrome/Safari/Firefox)
+- **Status bar themed** ตามสีพื้นหลัง app บนทั้ง iOS/Android
+
+---
+
 ## ใช้งาน
 
-เปิด `http://localhost:4321` แล้วทำตาม 5 ขั้นตอน:
-
 1. **เลือก platform** — TikTok/Reels (9:16) หรือ YouTube (16:9)
-2. **อัปโหลดคลิป** ลากวางได้ สูงสุด 500MB
+2. **อัปโหลดคลิป** — แตะหรือลากวางได้ สูงสุด 500MB
 3. **เลือกความยาว** — slider 15s ถึง 10 นาที
 4. **ใส่ Hook / CTA** + เลือกสีไฮไลต์
 5. **เปิด/ปิดเอฟเฟกต์** — auto caption, punch-in zoom, SFX, progress bar
-6. กด **Render** → ดู progress live → preview + download MP4
+6. กด **Render** → ดู progress live → preview + download MP4 + Share
 
 ---
 

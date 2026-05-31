@@ -2,17 +2,35 @@
 <html lang="th">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#08080e" />
+
     <title>video-studio</title>
+
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="application-name" content="video-studio" />
+    <meta name="mobile-web-app-capable" content="yes" />
+
+    <!-- iOS PWA -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="video-studio" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+
     <link rel="stylesheet" href="/style.css" />
   </head>
   <body>
     <header>
       <div class="brand">
-        <span class="logo"></span>
-        <div>
+        <img src="/icon.svg" alt="" class="logo" width="40" height="40" />
+        <div class="brand-text">
           <h1>video-studio</h1>
-          <p class="tagline">อัปโหลดคลิปยาว → ระบบตัดอัตโนมัติ + เอฟเฟกต์ + render MP4 พร้อมโพสต์</p>
+          <p class="tagline">long clip → viral short, ตัด + caption + เอฟเฟกต์ + เสียง</p>
         </div>
       </div>
     </header>
@@ -27,7 +45,7 @@
             <label class="fmt-card">
               <input type="radio" name="format" value="vertical" checked />
               <span class="fmt-icon">📱</span>
-              <span class="fmt-name">TikTok · IG Reels</span>
+              <span class="fmt-name">TikTok · Reels · Shorts</span>
               <span class="fmt-dim">1080 × 1920 · 9:16</span>
             </label>
             <label class="fmt-card">
@@ -45,7 +63,10 @@
           <label class="dropzone" id="dropzone">
             <input type="file" name="clip" accept="video/*" required id="file-input" />
             <span class="dz-icon">🎬</span>
-            <span class="dz-text" id="dz-text">คลิกเลือก หรือ ลากไฟล์มาวาง<br/><small>mp4 / mov / webm · สูงสุด 500 MB</small></span>
+            <span class="dz-text" id="dz-text">
+              <strong>แตะเพื่อเลือกคลิป</strong><br/>
+              <small>mp4 · mov · webm · สูงสุด 500 MB</small>
+            </span>
           </label>
         </section>
 
@@ -53,30 +74,26 @@
         <section>
           <div class="step-label"><span class="step-num">3</span> ความยาวที่ต้องการ</div>
           <div class="slider-row">
-            <input type="range" name="targetDuration" id="dur-slider" min="30" max="600" step="30" value="180" />
+            <input type="range" name="targetDuration" id="dur-slider" min="15" max="600" step="15" value="180" />
             <span class="slider-val" id="dur-val">3:00</span>
           </div>
-          <p class="hint">ระบบจะเลือกช่วงที่ดีที่สุดจากคลิปต้นฉบับให้ครบตามเวลานี้</p>
+          <p class="hint">ระบบจะกระจาย segment ทั่วคลิปต้นฉบับ snap เข้าหา scene change ให้</p>
         </section>
 
         <!-- STEP 4 — Text -->
         <section>
-          <div class="step-label"><span class="step-num">4</span> ข้อความ (ไม่บังคับ)</div>
+          <div class="step-label"><span class="step-num">4</span> Hook + CTA</div>
           <div class="text-grid">
             <label>
               Hook (วินาทีแรก)
-              <input type="text" name="hookText" placeholder="WAIT FOR IT / POV / NEW DROP" maxlength="60" />
-              <span class="hint">โชว์ 0–4 วินาทีแรก ดึงคนหยุดดู</span>
+              <input type="text" name="hookText" placeholder="WAIT FOR IT / POV / NEW DROP" maxlength="60" inputmode="text" autocapitalize="characters" />
             </label>
             <label>
               CTA ท้ายคลิป
-              <input type="text" name="ctaText" placeholder="FOLLOW @SPNpeet / ติดตามเพิ่มเติม" maxlength="60" />
-              <span class="hint">โชว์ 5 วินาทีสุดท้าย</span>
+              <input type="text" name="ctaText" placeholder="FOLLOW @SPNpeet" maxlength="60" inputmode="text" autocapitalize="characters" />
             </label>
-          </div>
-          <div class="text-grid" style="margin-top: 14px;">
-            <label>
-              สีไฮไลต์ (Hook + CTA + progress bar)
+            <label class="color-row">
+              สีไฮไลต์
               <input type="color" name="accent" value="#FFF200" />
             </label>
           </div>
@@ -91,7 +108,7 @@
               <span class="toggle-icon">💬</span>
               <span>
                 <strong>Auto captions</strong>
-                <small>Whisper AI ถอดเสียง → ขึ้นซับคำต่อคำ (CapCut style)</small>
+                <small>Whisper AI ถอดเสียงคำต่อคำ (CapCut style)</small>
               </span>
             </label>
             <label class="toggle">
@@ -107,7 +124,7 @@
               <span class="toggle-icon">🔊</span>
               <span>
                 <strong>Whoosh + impact SFX</strong>
-                <small>เสียง whoosh ตรงรอยต่อ + เสียง impact ตอน hook</small>
+                <small>เสียง whoosh ตรง transition + impact ตอน hook</small>
               </span>
             </label>
             <label class="toggle">
@@ -115,13 +132,13 @@
               <span class="toggle-icon">📊</span>
               <span>
                 <strong>Progress bar</strong>
-                <small>แถบสีไหลใต้คลิป (retention trick)</small>
+                <small>แถบสีไหลใต้คลิป (retention)</small>
               </span>
             </label>
           </div>
           <div class="text-grid" style="margin-top: 14px;">
             <label>
-              ภาษาคลิปต้นฉบับ (สำหรับ caption)
+              ภาษาคลิป (สำหรับ caption)
               <select name="language">
                 <option value="auto">ตรวจอัตโนมัติ</option>
                 <option value="en">English</option>
@@ -137,9 +154,6 @@
               </select>
             </label>
           </div>
-          <p class="hint" style="margin-top:14px;">
-            ออปชันเพิ่มเติม: <strong>loudnorm -14 LUFS / -1.5 dBTP</strong> + <strong>color grade + film grain + vignette</strong> + <strong>fade transitions</strong> เปิดอัตโนมัติเสมอ
-          </p>
         </section>
 
         <button type="submit" id="submit-btn">
@@ -162,14 +176,17 @@
         <p class="stage-text" id="stage-text">queued</p>
         <p class="elapsed-text" id="elapsed-text">0s</p>
 
-        <pre class="log-box" id="log-box"></pre>
+        <details class="log-details">
+          <summary>ดู log</summary>
+          <pre class="log-box" id="log-box"></pre>
+        </details>
 
-        <!-- Result -->
         <div id="result-box" class="hidden">
           <div class="result-meta" id="result-meta"></div>
           <video controls playsinline id="result-video" class="result-video"></video>
           <div class="result-actions">
             <a id="dl-link" class="btn-dl" download>⬇  ดาวน์โหลด MP4</a>
+            <button id="share-btn" class="btn-share" type="button" hidden>📤  Share</button>
             <button id="new-btn" class="btn-new" type="button">+ Render ใหม่</button>
           </div>
         </div>
@@ -178,7 +195,8 @@
       </aside>
     </main>
 
-    <footer>powered by <a href="https://github.com/heygen-com/hyperframes" target="_blank">HeyGen HyperFrames</a> + ffmpeg</footer>
+    <footer>powered by ffmpeg + whisper.cpp · open source</footer>
+
     <script src="/app.js"></script>
   </body>
 </html>
