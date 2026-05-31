@@ -1,0 +1,7 @@
+# This repo is a Node.js backend (video-studio) that requires
+# ffmpeg + whisper.cpp at runtime. Netlify can't host it as a static
+# site — every preview build will 404. Skip Netlify builds entirely;
+# deploy via render.yaml or fly.toml instead. See video-studio/DEPLOY.md.
+
+[build]
+  ignore = "/bin/true"
