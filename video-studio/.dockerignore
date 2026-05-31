@@ -1,0 +1,15 @@
+node_modules
+npm-debug.log
+.git
+.gitignore
+.env
+.env.*
+README.md
+renders
+assets/clip.mp4
+assets/_uploads
+vendor/whisper
+data
+.whisper-build
+.DS_Store
+*.md

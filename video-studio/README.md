@@ -54,20 +54,40 @@ npm run web               # bind 0.0.0.0 — เข้าจากเครื�
 
 ## เข้าใช้งานจากมือถือ
 
-เมื่อรัน `npm run web` server จะพิมพ์ URL ของทุก network interface พร้อม **QR code** ในเทอร์มินัล:
+### 🌍 ออนไลน์ตลอด — deploy ขึ้น cloud (1 คำสั่ง)
+
+ดู `DEPLOY.md` สำหรับวิธีเต็ม สรุปย่อ:
+
+```bash
+# Fly.io (ฟรี 3GB / 1GB RAM)
+curl -L https://fly.io/install.sh | sh
+fly auth signup
+fly launch --copy-config --no-deploy
+fly volumes create data    --size 1  --region sin --yes
+fly volumes create renders --size 10 --region sin --yes
+fly deploy
+```
+
+เสร็จแล้วได้ HTTPS URL `https://video-studio-xxx.fly.dev` เปิดบนมือถือไหนก็ได้ — Add to Home Screen ติดตั้งเป็นแอปจริง
+
+อีก 2 ทาง:
+- **Self-host บน VPS** $5/mo `docker compose up -d --build` + Caddy/Nginx ทำ HTTPS
+- **Self-host บน NAS/PC ที่บ้าน** + `cloudflared tunnel --url http://localhost:8080` แชร์ออกอินเทอร์เน็ตชั่วคราว
+
+### 🏠 LAN (เร็วที่สุดสำหรับลองเล่น)
+
+รัน `npm run web` แล้วดูที่ **terminal** — มันจะโชว์ IP จริงของเครื่องคุณ:
 
 ```
   💻  http://localhost:4321
-  📱  http://192.168.1.42:4321
+  📱  http://192.168.x.y:4321    ← IP จริงของเครื่องคุณ (ไม่ใช่ 192.168.1.42!)
+
+  scan with your phone camera:
+  [QR code]
 ```
 
-**บนมือถือ:**
-1. เปิดกล้อง iPhone หรือ Google Lens บน Android → สแกน QR
-2. เปิดหน้าเว็บ → **"Add to Home Screen"** ใน Safari/Chrome เพื่อติดตั้งเป็น PWA
-3. ไอคอน video-studio จะอยู่บนหน้าจอเหมือนแอป
-
-> ต้อง connect wifi เดียวกับเครื่องที่รัน server  
-> ถ้าจะใช้ public access ให้ใช้ tunneling เช่น `cloudflared tunnel` หรือ `ngrok http 4321`
+มือถือต้อง **เชื่อม wifi เดียวกัน** กับเครื่องที่รัน server แล้วสแกน QR ในเทอร์มินัล
+หากไม่เจอ IP `📱` ในเทอร์มินัล แสดงว่าเครื่องไม่มี LAN interface — ใช้ cloud หรือ tunnel แทน
 
 ---
 

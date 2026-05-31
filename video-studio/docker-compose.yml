@@ -1,0 +1,15 @@
+services:
+  video-studio:
+    build: .
+    image: video-studio:local
+    container_name: video-studio
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./renders:/app/renders
+      - ./data:/app/data
+    environment:
+      PORT: 8080
+      # PUBLIC_URL: https://your-domain.example.com  # optional, for share links
+    # If your host is behind NAT, expose 8080 via your reverse proxy / tunnel
