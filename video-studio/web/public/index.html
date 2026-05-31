@@ -65,12 +65,8 @@
           <div class="text-grid">
             <label>
               Hook (วินาทีแรก)
-              <input type="text" name="hookText" placeholder="Wait for it… / POV: / NEW DROP" maxlength="60" />
+              <input type="text" name="hookText" placeholder="WAIT FOR IT / POV / NEW DROP" maxlength="60" />
               <span class="hint">โชว์ 0–4 วินาทีแรก ดึงคนหยุดดู</span>
-            </label>
-            <label>
-              Caption กลางคลิป
-              <input type="text" name="caption" placeholder="Behind the scenes / ทำอย่างไร…" maxlength="60" />
             </label>
             <label>
               CTA ท้ายคลิป
@@ -78,6 +74,72 @@
               <span class="hint">โชว์ 5 วินาทีสุดท้าย</span>
             </label>
           </div>
+          <div class="text-grid" style="margin-top: 14px;">
+            <label>
+              สีไฮไลต์ (Hook + CTA + progress bar)
+              <input type="color" name="accent" value="#FFF200" />
+            </label>
+          </div>
+        </section>
+
+        <!-- STEP 5 — Effects -->
+        <section>
+          <div class="step-label"><span class="step-num">5</span> เอฟเฟกต์อัตโนมัติ</div>
+          <div class="effects-grid">
+            <label class="toggle">
+              <input type="checkbox" name="autoCaption" value="true" checked />
+              <span class="toggle-icon">💬</span>
+              <span>
+                <strong>Auto captions</strong>
+                <small>Whisper AI ถอดเสียง → ขึ้นซับคำต่อคำ (CapCut style)</small>
+              </span>
+            </label>
+            <label class="toggle">
+              <input type="checkbox" name="hookZoom" value="true" checked />
+              <span class="toggle-icon">🔍</span>
+              <span>
+                <strong>Punch-in zoom</strong>
+                <small>Hook ค่อยๆ ซูมเข้า ดึงสายตา</small>
+              </span>
+            </label>
+            <label class="toggle">
+              <input type="checkbox" name="sfx" value="true" checked />
+              <span class="toggle-icon">🔊</span>
+              <span>
+                <strong>Whoosh + impact SFX</strong>
+                <small>เสียง whoosh ตรงรอยต่อ + เสียง impact ตอน hook</small>
+              </span>
+            </label>
+            <label class="toggle">
+              <input type="checkbox" name="progressBar" value="true" checked />
+              <span class="toggle-icon">📊</span>
+              <span>
+                <strong>Progress bar</strong>
+                <small>แถบสีไหลใต้คลิป (retention trick)</small>
+              </span>
+            </label>
+          </div>
+          <div class="text-grid" style="margin-top: 14px;">
+            <label>
+              ภาษาคลิปต้นฉบับ (สำหรับ caption)
+              <select name="language">
+                <option value="auto">ตรวจอัตโนมัติ</option>
+                <option value="en">English</option>
+                <option value="th">ไทย</option>
+                <option value="ja">日本語</option>
+                <option value="ko">한국어</option>
+                <option value="zh">中文</option>
+                <option value="es">Español</option>
+                <option value="fr">Français</option>
+                <option value="de">Deutsch</option>
+                <option value="id">Indonesia</option>
+                <option value="vi">Tiếng Việt</option>
+              </select>
+            </label>
+          </div>
+          <p class="hint" style="margin-top:14px;">
+            ออปชันเพิ่มเติม: <strong>loudnorm -14 LUFS / -1.5 dBTP</strong> + <strong>color grade + film grain + vignette</strong> + <strong>fade transitions</strong> เปิดอัตโนมัติเสมอ
+          </p>
         </section>
 
         <button type="submit" id="submit-btn">

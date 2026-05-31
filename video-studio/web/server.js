@@ -91,10 +91,15 @@ app.post("/api/render", upload.single("clip"), (req, res) => {
   const body = req.body;
   const options = {
     format:         ["vertical", "landscape"].includes(body.format) ? body.format : "vertical",
-    targetDuration: Math.max(30, Math.min(600, Number(body.targetDuration) || 180)),
-    hookText:       (body.hookText  || "").slice(0, 80),
-    caption:        (body.caption   || "").slice(0, 80),
-    ctaText:        (body.ctaText   || "").slice(0, 80),
+    targetDuration: Math.max(15, Math.min(600, Number(body.targetDuration) || 180)),
+    hookText:       (body.hookText || "").slice(0, 80),
+    ctaText:        (body.ctaText  || "").slice(0, 80),
+    accent:         /^#[0-9a-fA-F]{6}$/.test(body.accent) ? body.accent : "#FFF200",
+    language:       body.language || "auto",
+    autoCaption:    body.autoCaption !== "false",
+    sfx:            body.sfx !== "false",
+    progressBar:    body.progressBar !== "false",
+    hookZoom:       body.hookZoom !== "false",
   };
 
   const job = newJob();

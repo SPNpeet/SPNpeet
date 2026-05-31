@@ -1,92 +1,121 @@
-# video-studio · HeyGen HyperFrames
+# video-studio
 
-โปรเจกต์ตัดต่อคลิปแบบเขียน HTML แล้ว render เป็น MP4 ด้วย [heygen-com/hyperframes](https://github.com/heygen-com/hyperframes)
+> Web UI + ffmpeg pipeline ที่เอาคลิปยาวมาตัดให้สั้น ใส่เอฟเฟกต์แบบไวรัล และ render เป็น MP4 พร้อมลง TikTok / IG Reels / YouTube Shorts
 
-ไทม์ไลน์ 30 วินาที (1920×1080 @ 30fps):
+## คุณสมบัติ (เทคนิคที่ใช้จริงในคลิปไวรัลปี 2026)
 
-| ช่วงเวลา | ฉาก | เอฟเฟกต์ |
-| --- | --- | --- |
-| 0–3s | Intro title card | title slide-up, accent rule scale-in, subtitle fade-up, fade-out |
-| 3–24s | Main clip (`assets/clip.mp4`) | color grade, vignette, film grain overlay |
-| 6–14s | Lower-third caption | slide-in left, hold, slide-out left |
-| 23.6–24s | Whip-pan | clip scale + lift |
-| 24–24.4s | Flash cut | white flash transition |
-| 24–29s | Outro card | title/rule/subtitle stagger |
-| 29–30s | Fade to black | full-screen overlay |
+### การตัดต่อ
+- **Smart segment selection** — กระจาย segment ทั่วคลิปต้นฉบับ (ไม่ตัดแค่ตอนต้น) snap เข้าหา scene change อัตโนมัติ
+- **Scene detection** ผ่าน `select='gt(scene,0.35)'` — หาจุดตัดธรรมชาติ
+- **Silence detection** ผ่าน `silencedetect=noise=-32dB:d=0.45` — หลบเสียงเงียบ
+- **Center-crop อัจฉริยะ** — landscape → vertical ก็จับกลางภาพให้
+
+### ภาพ
+- **Color grade** — `eq` (gamma + saturation + contrast) + `unsharp` mask + `noise` film grain + `vignette`
+- **Punch-in zoom** ที่ hook (0–4 วินาทีแรก) เพิ่ม 8% ค่อยๆ ซูมเข้าด้วย `zoompan`
+- **Progress bar** ใต้คลิป — แถบสีไหลตามเวลา ดัน retention
+- **Cinematic fade** ที่หัว/ท้ายคลิป
+
+### ตัวอักษร
+- **Hook overlay** ตัวใหญ่ + กรอบสี + drop shadow โผล่ใน 0.15s แรก ค้าง 4s
+- **CTA overlay** ตัวใหญ่ในวินาที 5 สุดท้าย
+- **Auto captions ผ่าน Whisper.cpp** — ถอดเสียงคำต่อคำ → ASS subtitle แบบ CapCut/Submagic (คำที่กำลังพูดเด่นเหลือง + ขนาดใหญ่ขึ้น 15%)
+- รองรับ 50+ ภาษา (ไทย / อังกฤษ / ญี่ปุ่น / เกาหลี / จีน / สเปน ฯลฯ) auto-detect ได้
+
+### เสียง
+- **Whoosh transition SFX** สังเคราะห์ใน ffmpeg ผ่าน `anoisesrc` + `bandpass` + envelope ใส่ทุกจุดตัดต่อ
+- **Impact hit** บน hook reveal
+- **Audio EQ** — bass warmth (+2.5dB ที่ 80Hz) + vocal presence (+1.5dB ที่ 3kHz)
+- **Dynamic range** — `dynaudnorm` smooth ความดัง
+- **Loudness norm** — `loudnorm I=-14:TP=-1.5:LRA=11` ตรง spec TikTok/IG/YouTube
+- **True-peak limiter** กัน clipping หลัง platform transcode
+
+### Encoding
+- H.264 high profile, level 4.1, CRF 18, preset fast
+- AAC 192k @ 44.1kHz
+- `yuv420p` + `+faststart` เปิดได้บนทุกแพลตฟอร์ม
+
+---
 
 ## ติดตั้ง
 
-ต้องมี Node.js 22+ และ FFmpeg
+ต้องมี **Node.js 22+**, **ffmpeg**, **cmake**, **gcc**
 
 ```bash
 cd video-studio
 npm install
-npm run demo:clip   # สร้าง assets/clip.mp4 จาก ffmpeg testsrc (ใช้แทนเทสอย่างเดียว)
+npm run install:whisper   # สร้าง whisper.cpp + ดาวน์โหลด base model (~150MB, ครั้งเดียว)
+npm run web               # เปิด http://localhost:4321
 ```
 
-จะใช้คลิปจริง: copy/รีเอนโค้ดมาทับ `assets/clip.mp4` (ใช้คำสั่งใน `demo:clip` เป็นต้นแบบเรื่อง keyframe — `-g 30 -keyint_min 30 -movflags +faststart` ทำให้ HyperFrames seek แม่น)
+ถ้าข้าม `npm run install:whisper` ระบบจะทำงานปกติ แค่ไม่มี auto-captions
+
+---
 
 ## ใช้งาน
 
-### หน้าเว็บ (วิธีที่ง่ายที่สุด)
+เปิด `http://localhost:4321` แล้วทำตาม 5 ขั้นตอน:
 
-```bash
-npm run web
+1. **เลือก platform** — TikTok/Reels (9:16) หรือ YouTube (16:9)
+2. **อัปโหลดคลิป** ลากวางได้ สูงสุด 500MB
+3. **เลือกความยาว** — slider 15s ถึง 10 นาที
+4. **ใส่ Hook / CTA** + เลือกสีไฮไลต์
+5. **เปิด/ปิดเอฟเฟกต์** — auto caption, punch-in zoom, SFX, progress bar
+6. กด **Render** → ดู progress live → preview + download MP4
+
+---
+
+## ขั้นตอน pipeline (ภายใน)
+
+```
+upload.mp4
+   ↓
+[ probe ]                       — ffprobe (duration / size / audio)
+   ↓
+[ detectScenes ][ detectSilences ]   — parallel
+   ↓
+[ chooseSegments ]               — snap to nearest scene boundary
+   ↓
+[ generateCaptions ][ makeWhoosh ][ makeImpact ]   — parallel
+   ↓                                   ↑
+   whisper-cli on per-segment .wav     ffmpeg lavfi
+   → ASS subtitle (kinetic karaoke)
+   ↓
+[ build filter_complex ]
+   trim → crop → scale → grade
+   → zoompan (hook) → fade
+   → concat → progress overlay
+   → hook drawtext → cta drawtext
+   → subtitles burn-in
+   ↓
+[ build audio chain ]
+   atrim per seg → concat → dynaudnorm → EQ
+   → loudnorm -14LUFS → SFX adelay+amix → alimiter
+   ↓
+[ ffmpeg encode ]
+   libx264 CRF18 + AAC 192k + faststart
+   ↓
+out.mp4   ← พร้อมโพสต์
 ```
 
-เปิด <http://localhost:4321> → อัปโหลดคลิป → กรอกฟอร์ม (hook, caption, accent) → กด Render → ดู progress + ดาวน์โหลด MP4 ได้ในหน้าเดียวกัน เซิร์ฟเวอร์จะ re-encode อัปโหลดให้เป็น keyframe ทุก 1 วินาทีเองก่อนส่งเข้า HyperFrames (กัน frame freeze ตอน seek)
-
-### CLI
-
-```bash
-npm run dev        # preview ใน browser พร้อม live reload
-npm run check      # lint + validate + inspect
-npm run render     # render เป็น MP4 ใน renders/
-npm run publish    # publish ขึ้น HyperFrames cloud (ออปชัน)
-```
-
-## ปรับแต่งจาก CLI
-
-ใช้ `--variables` ของ HyperFrames เพื่อ override ตัวแปรของคอมโพสิชันโดยไม่ต้องแก้ HTML
-
-```bash
-npx --yes hyperframes@0.6.61 render --variables '{
-  "clipSrc": "assets/myclip.mp4",
-  "clipStart": 4.5,
-  "clipDuration": 18,
-  "introTitle": "EP. 07",
-  "introSubtitle": "Night drive",
-  "caption": "Tokyo · Shibuya",
-  "outroTitle": "@SPNpeet",
-  "outroSubtitle": "next: behind the scenes",
-  "accent": "#ff4d6d"
-}'
-```
-
-ตัวแปรทั้งหมดประกาศไว้ที่ `<html data-composition-variables="...">` ใน `index.html`
-
-## ส่วนประกอบ
+## โครงสร้างไฟล์
 
 ```
 video-studio/
-├── index.html              # คอมโพสิชันหลัก (timeline 30s)
-├── assets/
-│   ├── vendor/gsap.min.js  # GSAP bundle (ไม่ใช่ CDN เพื่อ deterministic)
-│   └── clip.mp4            # คลิปอินพุต (gitignored, สร้างจาก demo:clip หรือ drop เอง)
+├── pipeline/
+│   ├── auto_edit.js      # orchestrator + filter_complex builder
+│   ├── analyze.js        # probe / silence / scene / loudness measurement
+│   ├── segments.js       # smart segment selection
+│   ├── captions.js       # whisper.cpp → ASS karaoke subtitle
+│   └── sfx.js            # whoosh + impact sound synthesis
 ├── web/
-│   ├── server.js           # Express + Multer, spawn hyperframes render
-│   └── public/             # หน้าเว็บฟอร์ม + JS polling progress
-├── hyperframes.json
-├── meta.json
-└── package.json
+│   ├── server.js         # Express + Multer + job queue
+│   └── public/           # หน้าเว็บฟอร์ม + JS progress polling
+├── scripts/
+│   └── install-whisper.sh
+├── vendor/whisper/       # whisper-cli + libs + model (gitignored)
+├── assets/
+│   ├── clip.mp4          # ทดลอง (gitignored)
+│   └── _uploads/         # temp uploads (gitignored)
+└── renders/              # output MP4 (gitignored)
 ```
-
-## เพิ่มเอฟเฟกต์/บล็อกใหม่
-
-ดูคาตาล็อกบล็อกที่ใช้สั่ง `hyperframes add <name>` ได้ผ่านสกิล `/hyperframes-registry` (เช่น `glitch`, `cinematic-zoom`, `light-leak`, `caption-neon-glow`, `vfx-portal`)
-
-```bash
-npx --yes hyperframes@0.6.61 add glitch
-```
-
-แล้วอ้างไปใน `index.html` ผ่าน `data-composition-src="compositions/glitch.html"`

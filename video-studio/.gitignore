@@ -4,4 +4,9 @@ renders/
 assets/clip.mp4
 assets/_uploads/
 .hyperframes-cache/
+.whisper-build/
+vendor/whisper/whisper-cli
+vendor/whisper/*.so
+vendor/whisper/*.so.*
+vendor/whisper/*.bin
 .DS_Store
