@@ -1,0 +1,14 @@
+node_modules/
+package-lock.json
+renders/
+data/
+assets/clip.mp4
+assets/_uploads/
+.hyperframes-cache/
+.whisper-build/
+vendor/whisper/whisper-cli
+vendor/whisper/*.so
+vendor/whisper/*.so.*
+vendor/whisper/*.bin
+.fly/
+.DS_Store

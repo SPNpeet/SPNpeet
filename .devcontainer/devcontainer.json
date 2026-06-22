@@ -1,0 +1,41 @@
+{
+  "name": "video-studio",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-22-bookworm",
+
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "installZsh": false,
+      "username": "node"
+    }
+  },
+
+  "onCreateCommand": {
+    "install-ffmpeg-fonts": "sudo apt-get update && sudo apt-get install -y --no-install-recommends ffmpeg fonts-dejavu fonts-noto-core fonts-noto-cjk fonts-thai-tlwg cmake build-essential && sudo rm -rf /var/lib/apt/lists/*"
+  },
+
+  "postCreateCommand": {
+    "npm-install":   "cd video-studio && npm install --no-audit --no-fund",
+    "build-whisper": "cd video-studio && bash scripts/install-whisper.sh"
+  },
+
+  "forwardPorts": [4321],
+  "portsAttributes": {
+    "4321": {
+      "label": "video-studio web",
+      "visibility": "public",
+      "onAutoForward": "openBrowser"
+    }
+  },
+
+  "postAttachCommand": "cd video-studio && npm run web",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "esbenp.prettier-vscode"
+      ]
+    }
+  },
+
+  "remoteUser": "node"
+}

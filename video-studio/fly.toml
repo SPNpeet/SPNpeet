@@ -1,0 +1,48 @@
+# Fly.io deployment config.
+# Usage:
+#   fly launch --copy-config --no-deploy   # creates the app + volume
+#   fly volumes create data    --size 5 --region sin
+#   fly volumes create renders --size 10 --region sin
+#   fly deploy
+#
+# Free tier covers a single shared-cpu-1x VM with 1GB RAM and a tiny volume.
+# For production, scale up to shared-cpu-2x / 2GB to fit two parallel renders.
+
+app = "video-studio"
+primary_region = "sin"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  PORT = "8080"
+  NODE_ENV = "production"
+  DATA_DIR = "/app/data"
+  RENDERS_DIR = "/app/renders"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = "stop"      # save free hours when idle
+  auto_start_machines = true
+  min_machines_running = 0
+
+  [[http_service.checks]]
+    interval = "30s"
+    timeout  = "5s"
+    grace_period = "20s"
+    method = "GET"
+    path = "/health"
+
+[[vm]]
+  cpu_kind = "shared"
+  cpus = 2
+  memory_mb = 2048
+
+[[mounts]]
+  source = "data"
+  destination = "/app/data"
+
+[[mounts]]
+  source = "renders"
+  destination = "/app/renders"

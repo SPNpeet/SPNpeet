@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#08080e" />
+
+    <title>video-studio</title>
+
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="application-name" content="video-studio" />
+    <meta name="mobile-web-app-capable" content="yes" />
+
+    <!-- iOS PWA -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="video-studio" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <header>
+      <div class="brand">
+        <img src="/icon.svg" alt="" class="logo" width="40" height="40" />
+        <div class="brand-text">
+          <h1>video-studio</h1>
+          <p class="tagline">long clip → viral short, ตัด + caption + เอฟเฟกต์ + เสียง</p>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <form id="render-form" class="card" autocomplete="off">
+
+        <!-- STEP 1 — Format -->
+        <section>
+          <div class="step-label"><span class="step-num">1</span> เลือก platform</div>
+          <div class="fmt-grid">
+            <label class="fmt-card">
+              <input type="radio" name="format" value="vertical" checked />
+              <span class="fmt-icon">📱</span>
+              <span class="fmt-name">TikTok · Reels · Shorts</span>
+              <span class="fmt-dim">1080 × 1920 · 9:16</span>
+            </label>
+            <label class="fmt-card">
+              <input type="radio" name="format" value="landscape" />
+              <span class="fmt-icon">🖥</span>
+              <span class="fmt-name">YouTube · Facebook</span>
+              <span class="fmt-dim">1920 × 1080 · 16:9</span>
+            </label>
+          </div>
+        </section>
+
+        <!-- STEP 2 — File -->
+        <section>
+          <div class="step-label"><span class="step-num">2</span> คลิปต้นฉบับ</div>
+          <label class="dropzone" id="dropzone">
+            <input type="file" name="clip" accept="video/*" required id="file-input" />
+            <span class="dz-icon">🎬</span>
+            <span class="dz-text" id="dz-text">
+              <strong>แตะเพื่อเลือกคลิป</strong><br/>
+              <small>mp4 · mov · webm · สูงสุด 500 MB</small>
+            </span>
+          </label>
+        </section>
+
+        <!-- STEP 3 — Duration -->
+        <section>
+          <div class="step-label"><span class="step-num">3</span> ความยาวที่ต้องการ</div>
+          <div class="slider-row">
+            <input type="range" name="targetDuration" id="dur-slider" min="15" max="600" step="15" value="180" />
+            <span class="slider-val" id="dur-val">3:00</span>
+          </div>
+          <p class="hint">ระบบจะกระจาย segment ทั่วคลิปต้นฉบับ snap เข้าหา scene change ให้</p>
+        </section>
+
+        <!-- STEP 4 — Text -->
+        <section>
+          <div class="step-label"><span class="step-num">4</span> Hook + CTA</div>
+          <div class="text-grid">
+            <label>
+              Hook (วินาทีแรก)
+              <input type="text" name="hookText" placeholder="WAIT FOR IT / POV / NEW DROP" maxlength="60" inputmode="text" autocapitalize="characters" />
+            </label>
+            <label>
+              CTA ท้ายคลิป
+              <input type="text" name="ctaText" placeholder="FOLLOW @SPNpeet" maxlength="60" inputmode="text" autocapitalize="characters" />
+            </label>
+            <label class="color-row">
+              สีไฮไลต์
+              <input type="color" name="accent" value="#FFF200" />
+            </label>
+          </div>
+        </section>
+
+        <!-- STEP 5 — Effects -->
+        <section>
+          <div class="step-label"><span class="step-num">5</span> เอฟเฟกต์อัตโนมัติ</div>
+          <div class="effects-grid">
+            <label class="toggle">
+              <input type="checkbox" name="autoCaption" value="true" checked />
+              <span class="toggle-icon">💬</span>
+              <span>
+                <strong>Auto captions</strong>
+                <small>Whisper AI ถอดเสียงคำต่อคำ (CapCut style)</small>
+              </span>
+            </label>
+            <label class="toggle">
+              <input type="checkbox" name="hookZoom" value="true" checked />
+              <span class="toggle-icon">🔍</span>
+              <span>
+                <strong>Punch-in zoom</strong>
+                <small>Hook ค่อยๆ ซูมเข้า ดึงสายตา</small>
+              </span>
+            </label>
+            <label class="toggle">
+              <input type="checkbox" name="sfx" value="true" checked />
+              <span class="toggle-icon">🔊</span>
+              <span>
+                <strong>Whoosh + impact SFX</strong>
+                <small>เสียง whoosh ตรง transition + impact ตอน hook</small>
+              </span>
+            </label>
+            <label class="toggle">
+              <input type="checkbox" name="progressBar" value="true" checked />
+              <span class="toggle-icon">📊</span>
+              <span>
+                <strong>Progress bar</strong>
+                <small>แถบสีไหลใต้คลิป (retention)</small>
+              </span>
+            </label>
+          </div>
+          <div class="text-grid" style="margin-top: 14px;">
+            <label>
+              ภาษาคลิป (สำหรับ caption)
+              <select name="language">
+                <option value="auto">ตรวจอัตโนมัติ</option>
+                <option value="en">English</option>
+                <option value="th">ไทย</option>
+                <option value="ja">日本語</option>
+                <option value="ko">한국어</option>
+                <option value="zh">中文</option>
+                <option value="es">Español</option>
+                <option value="fr">Français</option>
+                <option value="de">Deutsch</option>
+                <option value="id">Indonesia</option>
+                <option value="vi">Tiếng Việt</option>
+              </select>
+            </label>
+          </div>
+        </section>
+
+        <button type="submit" id="submit-btn">
+          <span id="btn-label">▸  Render คลิป</span>
+        </button>
+      </form>
+
+      <!-- STATUS PANEL -->
+      <aside id="status-card" class="card hidden">
+        <div class="status-header">
+          <span id="status-title">กำลัง render…</span>
+          <span id="status-badge" class="badge badge-running">running</span>
+        </div>
+
+        <div class="progress-wrap">
+          <div class="progress-bar"><div class="progress-fill" id="prog-fill"></div></div>
+          <span class="progress-pct" id="prog-pct">0%</span>
+        </div>
+
+        <p class="stage-text" id="stage-text">queued</p>
+        <p class="elapsed-text" id="elapsed-text">0s</p>
+
+        <details class="log-details">
+          <summary>ดู log</summary>
+          <pre class="log-box" id="log-box"></pre>
+        </details>
+
+        <div id="result-box" class="hidden">
+          <div class="result-meta" id="result-meta"></div>
+          <video controls playsinline id="result-video" class="result-video"></video>
+          <div class="result-actions">
+            <a id="dl-link" class="btn-dl" download>⬇  ดาวน์โหลด MP4</a>
+            <button id="share-btn" class="btn-share" type="button" hidden>📤  Share</button>
+            <button id="new-btn" class="btn-new" type="button">+ Render ใหม่</button>
+          </div>
+        </div>
+
+        <div id="error-box" class="error-box hidden"></div>
+      </aside>
+    </main>
+
+    <footer>powered by ffmpeg + whisper.cpp · open source</footer>
+
+    <script src="/app.js"></script>
+  </body>
+</html>

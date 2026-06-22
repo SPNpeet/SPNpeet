@@ -1,0 +1,42 @@
+# Render.com Blueprint — one-click deploy on FREE tier
+#
+# How to use:
+#   1. Make sure this repo lives on YOUR GitHub account.
+#   2. Open this URL in a browser (sign in with GitHub when asked):
+#
+#      https://render.com/deploy?repo=https://github.com/SPNpeet/SPNpeet&branch=claude/connect-hyperframe-video-yR4Xm
+#
+#      (replace SPNpeet/SPNpeet with your own fork if you forked it)
+#
+#   3. Render reads this file → builds the Dockerfile → exposes the app
+#      at https://video-studio-xxx.onrender.com
+#
+# Free tier limits:
+#   - 0.1 CPU / 512MB RAM        → renders take 2-5× longer than locally
+#   - Spins DOWN after 15min idle → first request after spin-down waits ~40s
+#   - No persistent disk         → MP4 files are ephemeral (download right away;
+#                                  jobs DB is reset on every restart)
+#
+# Upgrade to "starter" ($7/mo) for: always-on, 0.5 CPU, persistent /renders.
+
+services:
+  - type: web
+    name: video-studio
+    runtime: docker
+    plan: free
+    dockerfilePath: ./video-studio/Dockerfile
+    dockerContext: ./video-studio
+    region: singapore
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "8080"
+      - key: DATA_DIR
+        value: /tmp/data
+      - key: RENDERS_DIR
+        value: /tmp/renders
+      - key: UPLOAD_DIR
+        value: /tmp/uploads
