@@ -1,0 +1,8 @@
+Dockerfile
+.dockerignore
+*.md
+tmp/
+server
+*.test
+*.out
+.git

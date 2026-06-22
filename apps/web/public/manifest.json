@@ -1,0 +1,35 @@
+{
+  "name": "ร้านขายอาหารปลา POS",
+  "short_name": "อาหารปลา",
+  "description": "ระบบขายหน้าร้านและจัดการสต๊อกอาหารปลา ใช้งานได้แบบออฟไลน์",
+  "id": "/pos",
+  "start_url": "/pos",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "categories": ["business", "productivity", "shopping"],
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/maskable.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "เปิดการขาย",
+      "short_name": "ขาย",
+      "url": "/pos",
+      "description": "เปิดหน้าจอขายหน้าร้าน"
+    }
+  ]
+}
