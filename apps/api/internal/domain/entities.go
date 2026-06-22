@@ -15,6 +15,7 @@ type Product struct {
 	SKU       string    `json:"sku"`
 	Barcode   *string   `json:"barcode,omitempty"`
 	Name      string    `json:"name"`
+	Category  string    `json:"category"`
 	Price     string    `json:"price"`    // numeric as string to avoid float drift
 	TaxRate   string    `json:"tax_rate"` // e.g. "0.0700"
 	IsActive  bool      `json:"is_active"`

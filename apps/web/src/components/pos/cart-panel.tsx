@@ -39,12 +39,12 @@ export function CartPanel({ cashierId, online }: Props) {
       });
 
       toast.success(
-        online ? "Sale recorded — syncing to server" : "Saved offline — will sync when back online",
-        { description: `${itemCount()} item(s) · ${formatMoney(total())}` },
+        online ? "บันทึกการขายแล้ว — กำลังซิงก์ขึ้นเซิร์ฟเวอร์" : "บันทึกแบบออฟไลน์ — จะซิงก์เมื่อกลับมาออนไลน์",
+        { description: `${itemCount()} รายการ · ${formatMoney(total())}` },
       );
       clear();
     } catch (e) {
-      toast.error("Could not record sale", { description: (e as Error).message });
+      toast.error("ไม่สามารถบันทึกการขายได้", { description: (e as Error).message });
     } finally {
       setSubmitting(false);
     }
@@ -54,12 +54,12 @@ export function CartPanel({ cashierId, online }: Props) {
     <div className="flex h-full flex-col">
       <div className="flex items-center justify-between p-4">
         <h2 className="flex items-center gap-2 text-lg font-semibold">
-          <ShoppingCart className="size-5" /> Cart
+          <ShoppingCart className="size-5" /> ตะกร้า
           {itemCount() > 0 && <span className="text-sm text-muted-foreground">({itemCount()})</span>}
         </h2>
         {lines.length > 0 && (
           <Button variant="ghost" size="sm" onClick={clear}>
-            Clear
+            ล้าง
           </Button>
         )}
       </div>
@@ -68,7 +68,7 @@ export function CartPanel({ cashierId, online }: Props) {
       <div className="flex-1 overflow-y-auto p-2">
         {lines.length === 0 ? (
           <p className="py-12 text-center text-sm text-muted-foreground">
-            Scan or tap a product to begin.
+            สแกนบาร์โค้ดหรือแตะเลือกสินค้าเพื่อเริ่มการขาย
           </p>
         ) : (
           <ul className="flex flex-col gap-1">
@@ -108,10 +108,10 @@ export function CartPanel({ cashierId, online }: Props) {
 
       <Separator />
       <div className="space-y-1 p-4">
-        <Row label="Subtotal" value={formatMoney(subtotal())} />
-        <Row label="Tax" value={formatMoney(taxTotal())} />
+        <Row label="ยอดรวมสินค้า" value={formatMoney(subtotal())} />
+        <Row label="ภาษีมูลค่าเพิ่ม 7%" value={formatMoney(taxTotal())} />
         <div className="flex items-center justify-between pt-1 text-xl font-bold">
-          <span>Total</span>
+          <span>ยอดสุทธิ</span>
           <span className="tabular-nums">{formatMoney(total())}</span>
         </div>
         <Button
@@ -121,7 +121,7 @@ export function CartPanel({ cashierId, online }: Props) {
           onClick={handleCheckout}
         >
           {submitting ? <Loader2 className="mr-2 animate-spin" /> : null}
-          Charge {formatMoney(total())}
+          ชำระเงิน {formatMoney(total())}
         </Button>
       </div>
     </div>

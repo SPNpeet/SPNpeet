@@ -6,12 +6,14 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-/** Format a numeric-string / number as a currency string. */
-export function formatMoney(value: string | number, currency = "USD"): string {
+/** Format a numeric-string / number as Thai Baht (฿). */
+export function formatMoney(value: string | number, currency = "THB"): string {
   const n = typeof value === "string" ? Number(value) : value;
-  return new Intl.NumberFormat("en-US", { style: "currency", currency }).format(
-    Number.isFinite(n) ? n : 0,
-  );
+  return new Intl.NumberFormat("th-TH", {
+    style: "currency",
+    currency,
+    minimumFractionDigits: 2,
+  }).format(Number.isFinite(n) ? n : 0);
 }
 
 /** Round half-up to 2 decimals and return a fixed string (mirrors the API). */

@@ -14,6 +14,7 @@ export async function refreshCatalog(): Promise<{ ok: boolean; count: number }> 
       sku: p.sku,
       barcode: p.barcode,
       name: p.name,
+      category: p.category ?? "อื่นๆ",
       price: p.price,
       tax_rate: p.tax_rate,
       quantity: p.quantity,

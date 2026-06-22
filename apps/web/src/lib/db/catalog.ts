@@ -36,3 +36,31 @@ export async function searchProducts(query: string, limit = 24): Promise<CachedP
 export async function catalogCount(): Promise<number> {
   return db().products.count();
 }
+
+/** Distinct, sorted list of active product categories (for filter chips). */
+export async function listCategories(): Promise<string[]> {
+  const all = await db().products.filter((p) => p.is_active).toArray();
+  const set = new Set(all.map((p) => p.category || "อื่นๆ"));
+  return Array.from(set).sort((a, b) => a.localeCompare(b, "th"));
+}
+
+/** Search filtered by category (empty category = all). */
+export async function searchProductsByCategory(
+  query: string,
+  category: string,
+  limit = 60,
+): Promise<CachedProduct[]> {
+  const q = query.trim().toLowerCase();
+  const all = await db().products.filter((p) => p.is_active).toArray();
+  return all
+    .filter((p) => (category ? p.category === category : true))
+    .filter(
+      (p) =>
+        !q ||
+        p.name.toLowerCase().includes(q) ||
+        p.sku.toLowerCase().includes(q) ||
+        (p.barcode ?? "").toLowerCase().includes(q),
+    )
+    .sort((a, b) => a.name.localeCompare(b.name, "th"))
+    .slice(0, limit);
+}

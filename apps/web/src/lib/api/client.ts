@@ -11,6 +11,7 @@ export interface ApiProduct {
   sku: string;
   barcode: string | null;
   name: string;
+  category: string;
   price: string;
   tax_rate: string;
   is_active: boolean;

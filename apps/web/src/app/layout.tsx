@@ -4,14 +4,14 @@ import { Providers } from "@/components/providers";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "SPNpeet POS",
-  description: "Offline-first Point of Sale & Inventory terminal",
+  title: "ร้านขายอาหารปลา POS",
+  description: "ระบบขายหน้าร้านและจัดการสต๊อกอาหารปลา ใช้งานได้แบบออฟไลน์",
   manifest: "/manifest.json",
-  applicationName: "SPNpeet POS",
+  applicationName: "ร้านขายอาหารปลา",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "SPNpeet POS",
+    title: "ร้านขายอาหารปลา",
   },
   formatDetection: { telephone: false },
   icons: {

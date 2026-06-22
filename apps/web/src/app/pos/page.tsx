@@ -34,8 +34,8 @@ export default function PosPage() {
     const res = await refreshCatalog();
     setCatalogSize(await catalogCount());
     setRefreshing(false);
-    if (res.ok) toast.success(`Catalog updated — ${res.count} products`);
-    else toast.message("Using cached catalog (offline)");
+    if (res.ok) toast.success(`อัปเดตแคตตาล็อกแล้ว — ${res.count} รายการ`);
+    else toast.message("ใช้แคตตาล็อกที่บันทึกไว้ (ออฟไลน์)");
   }, []);
 
   // Bootstrap: identify cashier + warm the offline catalog.
@@ -51,13 +51,13 @@ export default function PosPage() {
   const handleProduct = React.useCallback(
     (p: CachedProduct) => {
       addProduct(p);
-      toast.success(`Added ${p.name}`);
+      toast.success(`เพิ่ม ${p.name}`);
     },
     [addProduct],
   );
 
   const handleUnknown = React.useCallback((barcode: string) => {
-    toast.error("Unknown barcode", { description: barcode });
+    toast.error("ไม่พบสินค้าจากบาร์โค้ดนี้", { description: barcode });
   }, []);
 
   const handleLogout = async () => {
@@ -71,18 +71,18 @@ export default function PosPage() {
       <header className="flex items-center justify-between gap-2 border-b bg-background px-4 py-2.5">
         <div className="flex items-center gap-2">
           <ScanLine className="size-5 text-primary" />
-          <span className="font-semibold">SPNpeet POS</span>
+          <span className="font-semibold">ร้านขายอาหารปลา</span>
           <Badge variant="outline" className="ml-1 gap-1">
             <Package className="size-3" />
-            {catalogSize}
+            {catalogSize} รายการ
           </Badge>
         </div>
         <div className="flex items-center gap-2">
           <SyncIndicator online={online} stats={stats} />
-          <Button variant="ghost" size="icon" onClick={syncCatalog} disabled={refreshing} title="Refresh catalog">
+          <Button variant="ghost" size="icon" onClick={syncCatalog} disabled={refreshing} title="ซิงก์แคตตาล็อก">
             <RefreshCw className={refreshing ? "animate-spin" : ""} />
           </Button>
-          <Button variant="ghost" size="icon" onClick={handleLogout} title="Sign out">
+          <Button variant="ghost" size="icon" onClick={handleLogout} title="ออกจากระบบ">
             <LogOut />
           </Button>
         </div>
@@ -97,14 +97,14 @@ export default function PosPage() {
               className="flex-1"
               onClick={() => setTab("search")}
             >
-              Browse
+              เลือกสินค้า
             </Button>
             <Button
               variant={tab === "scan" ? "default" : "outline"}
               className="flex-1"
               onClick={() => setTab("scan")}
             >
-              Scan
+              สแกน
             </Button>
           </div>
 

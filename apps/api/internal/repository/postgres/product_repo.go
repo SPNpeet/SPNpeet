@@ -17,7 +17,7 @@ type ProductRepo struct{ pool *pgxpool.Pool }
 func NewProductRepo(pool *pgxpool.Pool) *ProductRepo { return &ProductRepo{pool: pool} }
 
 const productSelect = `
-	SELECT p.id, p.sku, p.barcode::text, p.name, p.price::text, p.tax_rate::text,
+	SELECT p.id, p.sku, p.barcode::text, p.name, p.category, p.price::text, p.tax_rate::text,
 	       p.is_active, COALESCE(i.quantity, 0), p.updated_at
 	FROM public.products p
 	LEFT JOIN public.inventory i ON i.product_id = p.id`
@@ -64,7 +64,7 @@ type scannable interface {
 func scanProduct(s scannable) (domain.Product, error) {
 	var p domain.Product
 	var barcode *string
-	if err := s.Scan(&p.ID, &p.SKU, &barcode, &p.Name, &p.Price, &p.TaxRate, &p.IsActive, &p.Quantity, &p.UpdatedAt); err != nil {
+	if err := s.Scan(&p.ID, &p.SKU, &barcode, &p.Name, &p.Category, &p.Price, &p.TaxRate, &p.IsActive, &p.Quantity, &p.UpdatedAt); err != nil {
 		return p, err
 	}
 	p.Barcode = barcode

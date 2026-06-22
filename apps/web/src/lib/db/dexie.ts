@@ -15,7 +15,8 @@ export interface CachedProduct {
   sku: string;
   barcode: string | null;
   name: string;
-  price: string; // numeric string, e.g. "1.50"
+  category: string;
+  price: string; // numeric string, e.g. "45.00"
   tax_rate: string;
   quantity: number; // last-known on-hand (advisory; server is source of truth)
   is_active: boolean;
@@ -54,6 +55,11 @@ class SpnpeetDB extends Dexie {
     this.version(1).stores({
       // & = primary key (unique), no prefix = plain index.
       products: "&id, &sku, barcode, name, is_active",
+      syncQueue: "++localId, clientUuid, state, createdAt",
+    });
+    // v2: add `category` index for fast category browsing.
+    this.version(2).stores({
+      products: "&id, &sku, barcode, name, category, is_active",
       syncQueue: "++localId, clientUuid, state, createdAt",
     });
   }

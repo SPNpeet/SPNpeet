@@ -20,33 +20,33 @@ export function SyncIndicator({ online, stats }: Props) {
     <div className="flex items-center gap-2">
       <Badge variant={online ? "success" : "warning"} className="gap-1">
         {online ? <Cloud className="size-3.5" /> : <CloudOff className="size-3.5" />}
-        {online ? "Online" : "Offline"}
+        {online ? "ออนไลน์" : "ออฟไลน์"}
       </Badge>
 
       {pending > 0 && (
         <Badge variant="secondary" className="gap-1">
           <RefreshCw className={cn("size-3.5", stats.syncing > 0 && "animate-spin")} />
-          {pending} pending
+          รอซิงก์ {pending}
         </Badge>
       )}
 
       {stats.error > 0 && (
         <Badge variant="destructive" className="gap-1">
           <AlertTriangle className="size-3.5" />
-          {stats.error} failed
+          ผิดพลาด {stats.error}
         </Badge>
       )}
 
       {pending === 0 && stats.error === 0 && stats.synced > 0 && (
         <Badge variant="outline" className="gap-1 text-emerald-600">
           <CheckCircle2 className="size-3.5" />
-          Synced
+          ซิงก์แล้ว
         </Badge>
       )}
 
       {online && pending > 0 && (
         <Button variant="ghost" size="sm" onClick={() => void processQueue()}>
-          Sync now
+          ซิงก์เลย
         </Button>
       )}
     </div>

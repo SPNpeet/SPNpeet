@@ -97,8 +97,8 @@ export function BarcodeScanner({ onProduct, onUnknown }: Props) {
     } catch (e) {
       setError(
         e instanceof DOMException && e.name === "NotAllowedError"
-          ? "Camera permission denied. Enable it in your browser settings."
-          : "Unable to access the camera on this device.",
+          ? "ไม่ได้รับอนุญาตให้ใช้กล้อง กรุณาเปิดสิทธิ์กล้องในเบราว์เซอร์"
+          : "ไม่สามารถเข้าถึงกล้องบนอุปกรณ์นี้ได้",
       );
       setActive(false);
     } finally {
@@ -116,7 +116,7 @@ export function BarcodeScanner({ onProduct, onUnknown }: Props) {
         {!active && (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-muted-foreground">
             {starting ? <Loader2 className="size-8 animate-spin" /> : <CameraOff className="size-8" />}
-            <span className="text-sm">{starting ? "Starting camera…" : "Camera off"}</span>
+            <span className="text-sm">{starting ? "กำลังเปิดกล้อง…" : "กล้องปิดอยู่"}</span>
           </div>
         )}
         {active && (
@@ -131,12 +131,12 @@ export function BarcodeScanner({ onProduct, onUnknown }: Props) {
 
       {active ? (
         <Button variant="outline" size="lg" onClick={stop}>
-          <CameraOff className="mr-2" /> Stop scanning
+          <CameraOff className="mr-2" /> หยุดสแกน
         </Button>
       ) : (
         <Button size="lg" onClick={start} disabled={starting}>
           {starting ? <Loader2 className="mr-2 animate-spin" /> : <Camera className="mr-2" />}
-          Scan barcode
+          สแกนบาร์โค้ด
         </Button>
       )}
     </div>
