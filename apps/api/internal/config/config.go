@@ -11,13 +11,13 @@ import (
 )
 
 type Config struct {
-	Env              string
-	Port             string
-	DatabaseURL      string
-	PoolMaxConns     int32
-	PoolMinConns     int32
-	LockTimeout      time.Duration
-	CORSOrigins      []string
+	Env               string
+	Port              string
+	DatabaseURL       string
+	PoolMaxConns      int32
+	PoolMinConns      int32
+	LockTimeout       time.Duration
+	CORSOrigins       []string
 	SupabaseJWTSecret string
 }
 

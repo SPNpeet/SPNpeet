@@ -23,15 +23,15 @@ func NewDomainError(code, message string) *DomainError {
 
 // Stable atomic error codes shared with the frontend.
 const (
-	CodeEmptyCart        = "EMPTY_CART"
-	CodeInvalidQuantity  = "INVALID_QUANTITY"
-	CodeProductNotFound  = "PRODUCT_NOT_FOUND"
+	CodeEmptyCart         = "EMPTY_CART"
+	CodeInvalidQuantity   = "INVALID_QUANTITY"
+	CodeProductNotFound   = "PRODUCT_NOT_FOUND"
 	CodeInsufficientStock = "INSUFFICIENT_STOCK"
-	CodeLockTimeout      = "LOCK_TIMEOUT"
-	CodeDuplicateRequest = "DUPLICATE_REQUEST" // surfaced as success (idempotent)
-	CodeInternal         = "INTERNAL_ERROR"
-	CodeUnauthorized     = "UNAUTHORIZED"
-	CodeValidation       = "VALIDATION_ERROR"
+	CodeLockTimeout       = "LOCK_TIMEOUT"
+	CodeDuplicateRequest  = "DUPLICATE_REQUEST" // surfaced as success (idempotent)
+	CodeInternal          = "INTERNAL_ERROR"
+	CodeUnauthorized      = "UNAUTHORIZED"
+	CodeValidation        = "VALIDATION_ERROR"
 )
 
 // AsDomainError unwraps a DomainError if present.
