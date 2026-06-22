@@ -20,16 +20,27 @@ CREATE INDEX IF NOT EXISTS idx_products_category ON public.products (category) W
 
 -- ---------------------------------------------------------------------------
 -- Remove the old generic demo catalog (kiosk snacks) if present, so the store
--- shows only fish-food products. Cascades clean up inventory/ledger demo rows.
+-- shows only fish-food products. The ledger / order_items reference products
+-- with ON DELETE RESTRICT, so clear those demo references first. (These demo
+-- rows only ever exist from 0005_seed.sql in dev — never real sales.)
 -- ---------------------------------------------------------------------------
-DELETE FROM public.products WHERE id IN (
-  '11111111-1111-1111-1111-111111111111',
-  '22222222-2222-2222-2222-222222222222',
-  '33333333-3333-3333-3333-333333333333',
-  '44444444-4444-4444-4444-444444444444',
-  '55555555-5555-5555-5555-555555555555',
-  '66666666-6666-6666-6666-666666666666'
-);
+DO $$
+DECLARE
+  v_demo uuid[] := ARRAY[
+    '11111111-1111-1111-1111-111111111111',
+    '22222222-2222-2222-2222-222222222222',
+    '33333333-3333-3333-3333-333333333333',
+    '44444444-4444-4444-4444-444444444444',
+    '55555555-5555-5555-5555-555555555555',
+    '66666666-6666-6666-6666-666666666666'
+  ]::uuid[];
+BEGIN
+  DELETE FROM public.inventory_transactions WHERE product_id = ANY(v_demo);
+  DELETE FROM public.order_items            WHERE product_id = ANY(v_demo);
+  DELETE FROM public.inventory              WHERE product_id = ANY(v_demo);
+  DELETE FROM public.products               WHERE id          = ANY(v_demo);
+END
+$$;
 
 -- ---------------------------------------------------------------------------
 -- Fish-food catalog. Categories:
